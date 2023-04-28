@@ -1,0 +1,9 @@
+mode: set
+nozzlium/kepo_backend/answer/answer_service_impl.go:19.124,26.2 2 1
+nozzlium/kepo_backend/answer/answer_service_impl.go:28.123,35.2 2 1
+nozzlium/kepo_backend/questionlike/questionlike_service_impl.go:18.143,19.19 1 1
+nozzlium/kepo_backend/questionlike/questionlike_service_impl.go:19.19,26.3 2 1
+nozzlium/kepo_backend/questionlike/questionlike_service_impl.go:26.8,33.3 2 1
+nozzlium/kepo_backend/question/question_service_impl.go:19.124,26.2 2 1
+nozzlium/kepo_backend/question/question_service_impl.go:28.130,35.2 2 1
+nozzlium/kepo_backend/question/question_service_impl.go:37.130,44.2 2 1

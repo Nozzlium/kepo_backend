@@ -1,0 +1,55 @@
+@startuml
+'testdot
+'//www.plantuml.com/plantuml/png/fL1DJlCm4Dtx5FFr03r0LLNzXCG6DYnOeo4UfLRjSMoFLQAKknDC8AueKWHPEVFUl9_P9y4esLdrJmxa2D2P5fLAHyCTHdHW3PFq7O6FSl1A4OkH7bQFYU8AC466GS7u6Rq1pkwP8cotBJ555DAxNG7po6Pqj06X5oaZScXizTzXIYSVTJMAtjAdg7gTlMzGgFMnB_xD4l_PUmGpcv1fH2h9Xqn9ZESY6PPMUhfWtDvDK3FbAx3H5v1d8PQgfARKHDEzcq_JAjP_JgVfplZ7K65gMC4_1hjscNjpf8_hM1X-R_QztPSmBX36id9TDiFvl5xx0SBynEffAuPLpSmECpjK3AmsrPvOPsVV0000
+
+!theme amiga
+
+skinparam linetype ortho
+
+entity "User" as u {
+    id: number <<generated>>
+    username: text
+    email: text
+    password: text
+}
+
+entity "Category" as c {
+    id: number <<generated>>
+    name: text <<unique>>
+}
+
+entity "Question" as q {
+    id: number <<generated>>
+    user_id: number <<FK>>
+    category_id: id <<FK>>
+    content: text
+    description: text
+}
+
+entity "Answer" as a {
+    id: number <<generated>>
+    user_id: number <<FK>>
+    question_id: number <<FK>>
+    content: text
+}
+
+entity "QuestionLike" as ql {
+    user_id: number <<FK>>
+    question_id: number <<FK>>
+}
+
+entity "AnswerLike" as al {
+    user_id: number <<FK>>
+    answer_id: number <<FK>>
+}
+
+u ||..o{ q
+u ||..o{ a
+c ||..o{ q
+q ||..o{ a
+u ||..o{ ql
+q ||..o{ ql
+u ||..o{ al
+a ||..o{ al
+
+@enduml
