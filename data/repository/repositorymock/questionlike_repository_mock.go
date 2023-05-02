@@ -10,7 +10,7 @@ import (
 )
 
 type QuestionLikeRepositoryMock struct {
-	Mock mock.Mock
+	Mock *mock.Mock
 }
 
 func (repository *QuestionLikeRepositoryMock) Insert(ctx context.Context, DB *gorm.DB, questionLike entity.QuestionLike) (entity.QuestionLike, error) {

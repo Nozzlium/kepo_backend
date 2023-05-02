@@ -8,6 +8,6 @@ import (
 )
 
 type UserRepository interface {
-	Insert(ctx context.Context, DB *gorm.DB, user entity.User) entity.User
+	Insert(ctx context.Context, DB *gorm.DB, user entity.User) (entity.User, error)
 	FindOneBy(ctx context.Context, DB *gorm.DB, user entity.User) (entity.User, error)
 }

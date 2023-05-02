@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var questionLikeRepositoryMock repositorymock.QuestionLikeRepositoryMock = repositorymock.QuestionLikeRepositoryMock{Mock: mock.Mock{}}
+var questionLikeRepositoryMock = repositorymock.QuestionLikeRepositoryMock{Mock: &mock.Mock{}}
 var questionLikeService = QuestionLikeServiceImpl{
 	QuestionLikeRepository: &questionLikeRepositoryMock,
 }
