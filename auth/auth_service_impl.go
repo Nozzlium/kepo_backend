@@ -32,13 +32,13 @@ func (service *AuthServiceImpl) Register(ctx context.Context, param param.AuthPa
 	return helper.UserEntityToResponse(user), err
 }
 
-func (service *AuthServiceImpl) Login(ctx context.Context, param param.AuthParam) (response.AuthResponse, error) {
-	user, err := service.UserRepository.FindOneBy(
+func (service *AuthServiceImpl) Login(ctx context.Context, param param.LoginParam) (response.AuthResponse, error) {
+	user, err := service.UserRepository.FindOneBasedOnIdentity(
 		ctx,
 		service.DB,
 		entity.User{
-			Username: param.Username,
-			Email:    param.Email,
+			Username: param.Identity,
+			Email:    param.Identity,
 		},
 	)
 	if err != nil {

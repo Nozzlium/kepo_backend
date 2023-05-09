@@ -20,3 +20,13 @@ func (repository *UserRepositoryImpl) FindOneBy(ctx context.Context, DB *gorm.DB
 	find := DB.WithContext(ctx).Where(&user).First(&result)
 	return result, find.Error
 }
+
+func (repository *UserRepositoryImpl) FindOneBasedOnIdentity(ctx context.Context, DB *gorm.DB, user entity.User) (entity.User, error) {
+	result := entity.User{}
+	find := DB.WithContext(ctx).Where(
+		"username = ?", user.Username,
+	).Or(
+		"email = ?", user.Email,
+	).First(&result)
+	return result, find.Error
+}

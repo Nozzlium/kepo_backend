@@ -83,7 +83,7 @@ func TestRegisterError(t *testing.T) {
 
 func TestLoginSuccess(t *testing.T) {
 	mockCall := userRepositoryMock.Mock.On(
-		"FindOneBy",
+		"FindOneBasedOnIdentity",
 		mock.Anything,
 		mock.Anything,
 		mock.Anything,
@@ -98,8 +98,8 @@ func TestLoginSuccess(t *testing.T) {
 	)
 	response, err := authService.Login(
 		context.Background(),
-		param.AuthParam{
-			Username: "user",
+		param.LoginParam{
+			Identity: "user",
 			Password: "password",
 		},
 	)
@@ -112,7 +112,7 @@ func TestLoginSuccess(t *testing.T) {
 
 func TestLoginError(t *testing.T) {
 	mockCall := userRepositoryMock.Mock.On(
-		"FindOneBy",
+		"FindOneBasedOnIdentity",
 		mock.Anything,
 		mock.Anything,
 		mock.Anything,
@@ -122,8 +122,8 @@ func TestLoginError(t *testing.T) {
 	)
 	_, err := authService.Login(
 		context.Background(),
-		param.AuthParam{
-			Username: "wadidawwww",
+		param.LoginParam{
+			Identity: "wadidawwww",
 			Password: "mukeluwadidaw",
 		},
 	)
@@ -134,7 +134,7 @@ func TestLoginError(t *testing.T) {
 
 func TestLoginNoUser(t *testing.T) {
 	mockCall := userRepositoryMock.Mock.On(
-		"FindOneBy",
+		"FindOneBasedOnIdentity",
 		mock.Anything,
 		mock.Anything,
 		mock.Anything,
@@ -144,8 +144,8 @@ func TestLoginNoUser(t *testing.T) {
 	)
 	_, err := authService.Login(
 		context.Background(),
-		param.AuthParam{
-			Username: "wadidawwww",
+		param.LoginParam{
+			Identity: "wadidawwww",
 			Password: "mukeluwadidaw",
 		},
 	)
@@ -158,7 +158,7 @@ func TestLoginNoUser(t *testing.T) {
 
 func TestLoginInvalidPassword(t *testing.T) {
 	mockCall := userRepositoryMock.Mock.On(
-		"FindOneBy",
+		"FindOneBasedOnIdentity",
 		mock.Anything,
 		mock.Anything,
 		mock.Anything,
@@ -173,8 +173,8 @@ func TestLoginInvalidPassword(t *testing.T) {
 	)
 	_, err := authService.Login(
 		context.Background(),
-		param.AuthParam{
-			Username: "user",
+		param.LoginParam{
+			Identity: "user",
 			Password: "kicoetcoet",
 		},
 	)
