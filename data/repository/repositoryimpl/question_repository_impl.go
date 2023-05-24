@@ -74,6 +74,11 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 			"u.id = ?", param.Question.UserID,
 		)
 	}
+	if param.Question.ID != 0 {
+		find = find.Where(
+			"q.id = ?", param.Question.ID,
+		)
+	}
 	find = find.Group("q.id").
 		Limit(param.PageSize).
 		Offset((param.PageNo - 1) * param.PageSize).Find(&res)

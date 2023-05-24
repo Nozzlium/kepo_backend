@@ -4,7 +4,6 @@ import (
 	"context"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
-	"nozzlium/kepo_backend/data/repository/repositorymock"
 	"nozzlium/kepo_backend/data/repository/result"
 	"testing"
 
@@ -13,29 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var questionRepositoryMock = repositorymock.QuestionRepositoryMock{Mock: mock.Mock{}}
 var questionService QuestionService = &QuestionServiceImpl{QuestionRepository: &questionRepositoryMock}
-
-var expectedQuestions = []result.QuestionResult{
-	{
-		ID:       1,
-		UserID:   1,
-		Username: "User1",
-	},
-	{
-		ID:       2,
-		UserID:   2,
-		Username: "User2",
-	},
-}
-
-var expectedInsertedQuestion = entity.Question{
-	ID:          1,
-	UserID:      1,
-	CategoryID:  1,
-	Content:     "test",
-	Description: "test",
-}
 
 func TestCreateQuestionSuccess(t *testing.T) {
 	mockCall := questionRepositoryMock.Mock.On("Insert",
