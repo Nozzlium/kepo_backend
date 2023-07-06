@@ -11,6 +11,5 @@ func QuestionLikeParamToResponse(
 	return response.QuestionLikeResponse{
 		IsLiked:    param.IsLiked,
 		QuestionID: param.QuestionLike.QuestionID,
-		UserID:     param.QuestionLike.UserID,
 	}
 }

@@ -1,8 +1,10 @@
 package tools
 
 import (
+	"context"
 	"errors"
 	"nozzlium/kepo_backend/constants"
+	"nozzlium/kepo_backend/exception"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -11,6 +13,16 @@ import (
 type JwtClaims struct {
 	jwt.RegisteredClaims
 	UserId uint `json:"userId"`
+}
+
+func GetClaimsFromContext(
+	context context.Context,
+) (JwtClaims, error) {
+	claims, ok := context.Value(constants.USER_ID_CLAIMS).(JwtClaims)
+	if !ok {
+		return claims, exception.UnauthorizedError{}
+	}
+	return claims, nil
 }
 
 func NewJwtToken(userId uint) (string, error) {

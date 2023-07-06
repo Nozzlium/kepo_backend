@@ -9,8 +9,7 @@ func AnswerLikeParamToResponse(
 	param param.AnswerLikeParam,
 ) response.AnswerLikeResponse {
 	return response.AnswerLikeResponse{
-		IsLike:   param.IsLike,
+		IsLiked:  param.IsLike,
 		AnswerID: param.AnswerLike.AnswerID,
-		UserID:   param.AnswerLike.UserID,
 	}
 }

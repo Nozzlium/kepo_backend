@@ -2,33 +2,59 @@ package questionlike
 
 import (
 	"context"
+	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
 	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/data/response"
-	"nozzlium/kepo_backend/helper"
+	"nozzlium/kepo_backend/exception"
 
 	"gorm.io/gorm"
 )
 
 type QuestionLikeServiceImpl struct {
 	QuestionLikeRepository repository.QuestionLikeRepository
+	QuestionRepository     repository.QuestionRepository
 	DB                     *gorm.DB
 }
 
-func (service *QuestionLikeServiceImpl) AssignLike(ctx context.Context, param param.QuestionLikeParam) (response.QuestionLikeResponse, error) {
-	if param.IsLiked {
-		_, err := service.QuestionLikeRepository.Insert(
+func (service *QuestionLikeServiceImpl) AssignLike(ctx context.Context, params param.QuestionLikeParam) (response.QuestionLikeResponse, error) {
+	var err error
+	var resp response.QuestionLikeResponse
+	if params.IsLiked {
+		_, err = service.QuestionLikeRepository.Insert(
 			ctx,
 			service.DB,
-			param.QuestionLike,
+			params.QuestionLike,
 		)
-		return helper.QuestionLikeParamToResponse(param), err
 	} else {
-		_, err := service.QuestionLikeRepository.Delete(
+		_, err = service.QuestionLikeRepository.Delete(
 			ctx,
 			service.DB,
-			param,
+			params,
 		)
-		return helper.QuestionLikeParamToResponse(param), err
 	}
+	if err != nil {
+		return resp, err
+	}
+
+	res, err := service.QuestionRepository.FindDetailed(
+		ctx,
+		service.DB,
+		param.QuestionParam{
+			UserID: params.QuestionLike.UserID,
+			Question: entity.Question{
+				ID: params.QuestionLike.QuestionID,
+			},
+		},
+	)
+	if len(res) < 1 {
+		return resp, exception.NotFoundError{}
+	}
+	likedQuestion := res[0]
+	resp = response.QuestionLikeResponse{
+		QuestionID: likedQuestion.ID,
+		Likes:      likedQuestion.Likes,
+		IsLiked:    likedQuestion.UserLiked != 0,
+	}
+	return resp, err
 }

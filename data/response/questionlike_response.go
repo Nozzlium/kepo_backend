@@ -1,7 +1,7 @@
 package response
 
 type QuestionLikeResponse struct {
-	QuestionID uint
-	UserID     uint
-	IsLiked    bool
+	QuestionID uint `json:"questionId"`
+	IsLiked    bool `json:"isLiked"`
+	Likes      uint `json:"likes"`
 }

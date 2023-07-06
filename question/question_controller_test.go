@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"nozzlium/kepo_backend/constants"
-	"nozzlium/kepo_backend/customerror"
 	"nozzlium/kepo_backend/data/requestbody"
 	"nozzlium/kepo_backend/data/response"
+	"nozzlium/kepo_backend/exception"
 	"nozzlium/kepo_backend/tools"
 	"testing"
 
@@ -28,7 +28,7 @@ func TestPostCreateSuccess(t *testing.T) {
 	mockCall := mockReturnInsertSuccess()
 	createJsonBytes, _ := json.Marshal(createRequestBody)
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:2637/question", bytes.NewReader(createJsonBytes))
-	ctx := getClaimContext(request.Context())
+	ctx := tools.GetMockClaimContext(request.Context())
 	recorder := httptest.NewRecorder()
 
 	questionController.Create(recorder, request.WithContext(ctx), nil)
@@ -43,7 +43,7 @@ func TestPostCreateSuccess(t *testing.T) {
 	data := resp.Data.(map[string]interface{})
 
 	assert.NotEqual(t, uint(0), data["id"])
-	assert.Equal(t, claimContext.UserId, uint(data["userId"].(float64)))
+	assert.Equal(t, tools.ClaimContext.UserId, uint(data["userId"].(float64)))
 	assert.Equal(t, createRequestBody.CategoryID, uint(data["categoryId"].(float64)))
 }
 
@@ -51,7 +51,7 @@ func TestPostCreateError(t *testing.T) {
 	mockCall := mockReturnInsertError()
 	createJsonBytes, _ := json.Marshal(createRequestBody)
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:2637/question", bytes.NewReader(createJsonBytes))
-	ctx := getClaimContext(request.Context())
+	ctx := tools.GetMockClaimContext(request.Context())
 	recorder := httptest.NewRecorder()
 
 	assert.Panics(t, func() {
@@ -67,11 +67,11 @@ func TestPostCreateBodyMissingParam(t *testing.T) {
 		Description: "hihi",
 	})
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:2637/question", bytes.NewReader(createJsonBytes))
-	ctx := getClaimContext(request.Context())
+	ctx := tools.GetMockClaimContext(request.Context())
 	recorder := httptest.NewRecorder()
 
 	assert.PanicsWithError(t,
-		customerror.BadRequestError{}.Error(),
+		exception.BadRequestError{}.Error(),
 		func() {
 			questionController.Create(recorder, request.WithContext(ctx), nil)
 		})
@@ -84,7 +84,7 @@ func TestPostCreateNoClaims(t *testing.T) {
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:2637/question", bytes.NewReader(createJsonBytes))
 	recorder := httptest.NewRecorder()
 
-	assert.PanicsWithError(t, customerror.UnauthorizedError{}.Error(), func() {
+	assert.PanicsWithError(t, exception.UnauthorizedError{}.Error(), func() {
 		questionController.Create(recorder, request, nil)
 	})
 	mockCall.Unset()
@@ -148,7 +148,7 @@ func TestGetQuestionsUnauthorized(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	assert.PanicsWithError(t,
-		customerror.UnauthorizedError{}.Error(),
+		exception.UnauthorizedError{}.Error(),
 		func() {
 			questionController.Get(recorder, request, nil)
 		})
@@ -202,7 +202,7 @@ func TestGetQuestionByIdUnauthorized(t *testing.T) {
 	})
 	assert.PanicsWithError(
 		t,
-		customerror.UnauthorizedError{}.Error(),
+		exception.UnauthorizedError{}.Error(),
 		func() {
 			questionController.GetById(
 				recorder,
@@ -231,7 +231,7 @@ func TestControllerGetQuestionByIdBadRequest(t *testing.T) {
 	})
 	assert.PanicsWithError(
 		t,
-		customerror.BadRequestError{}.Error(),
+		exception.BadRequestError{}.Error(),
 		func() {
 			questionController.GetById(
 				recorder,
@@ -259,7 +259,7 @@ func TestGetOneQuestionNotFound(t *testing.T) {
 	})
 	assert.PanicsWithError(
 		t,
-		customerror.NotFoundError{}.Error(),
+		exception.NotFoundError{}.Error(),
 		func() {
 			questionController.GetById(
 				recorder,
@@ -326,7 +326,7 @@ func TestGetQuestionsByUserUnauthorized(t *testing.T) {
 
 	assert.PanicsWithError(
 		t,
-		customerror.UnauthorizedError{}.Error(),
+		exception.UnauthorizedError{}.Error(),
 		func() {
 			questionController.GetByUser(recorder, request, params)
 		},
@@ -352,7 +352,7 @@ func TestGetQuestionsByUserInvalidUserId(t *testing.T) {
 
 	assert.PanicsWithError(
 		t,
-		customerror.BadRequestError{}.Error(),
+		exception.BadRequestError{}.Error(),
 		func() {
 			questionController.GetByUser(recorder, request.WithContext(ctx), params)
 		},

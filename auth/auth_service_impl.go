@@ -3,11 +3,11 @@ package auth
 import (
 	"context"
 	"errors"
-	"nozzlium/kepo_backend/customerror"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
 	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/data/response"
+	"nozzlium/kepo_backend/exception"
 	"nozzlium/kepo_backend/helper"
 	"nozzlium/kepo_backend/tools"
 
@@ -43,13 +43,13 @@ func (service *AuthServiceImpl) Login(ctx context.Context, param param.LoginPara
 	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return response.AuthResponse{}, customerror.InvalidLoginError{}
+			return response.AuthResponse{}, exception.InvalidLoginError{}
 		}
 		return response.AuthResponse{}, err
 	}
 	passCheck := tools.CheckPasswordHash(param.Password, user.Password)
 	if !passCheck {
-		return response.AuthResponse{}, customerror.InvalidLoginError{}
+		return response.AuthResponse{}, exception.InvalidLoginError{}
 	}
 	token, err := tools.NewJwtToken(user.ID)
 	return response.AuthResponse{Token: token}, err

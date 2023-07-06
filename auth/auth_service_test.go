@@ -3,10 +3,10 @@ package auth
 import (
 	"context"
 	"nozzlium/kepo_backend/constants"
-	"nozzlium/kepo_backend/customerror"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
 	"nozzlium/kepo_backend/data/repository/repositorymock"
+	"nozzlium/kepo_backend/exception"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -152,7 +152,7 @@ func TestLoginNoUser(t *testing.T) {
 	mockCall.Unset()
 
 	assert.NotNil(t, err)
-	assert.IsType(t, customerror.InvalidLoginError{}, err)
+	assert.IsType(t, exception.InvalidLoginError{}, err)
 	assert.Equal(t, constants.INVALID_CREDENTIAL, err.Error())
 }
 
@@ -181,6 +181,6 @@ func TestLoginInvalidPassword(t *testing.T) {
 	mockCall.Unset()
 
 	assert.NotNil(t, err)
-	assert.IsType(t, customerror.InvalidLoginError{}, err)
+	assert.IsType(t, exception.InvalidLoginError{}, err)
 	assert.Equal(t, constants.INVALID_CREDENTIAL, err.Error())
 }

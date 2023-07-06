@@ -7,3 +7,9 @@ type AnswerParam struct {
 	UserID uint
 	Answer entity.Answer
 }
+
+func InitAnswerparam() AnswerParam {
+	return AnswerParam{
+		PaginationParam: InitPaginationParam(),
+	}
+}

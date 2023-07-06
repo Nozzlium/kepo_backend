@@ -1,3 +1,20 @@
 mode: set
+nozzlium/kepo_backend/answer/mock.go:93.43,107.2 1 1
+nozzlium/kepo_backend/answer/mock.go:109.41,115.2 1 1
+nozzlium/kepo_backend/answer/mock.go:117.37,126.2 1 1
+nozzlium/kepo_backend/answer/mock.go:128.49,137.2 1 1
+nozzlium/kepo_backend/answer/mock.go:139.39,148.2 1 1
+nozzlium/kepo_backend/answer/mock.go:150.35,159.2 1 1
+nozzlium/kepo_backend/answer/mock.go:161.42,170.2 1 1
+nozzlium/kepo_backend/answer/answer_controller_impl.go:25.125,35.16 8 1
+nozzlium/kepo_backend/answer/answer_controller_impl.go:39.2,61.26 6 1
+nozzlium/kepo_backend/answer/answer_controller_impl.go:35.16,36.39 1 1
+nozzlium/kepo_backend/answer/answer_controller_impl.go:64.123,89.2 9 1
+nozzlium/kepo_backend/answer/answer_controller_impl.go:91.127,110.19 9 1
+nozzlium/kepo_backend/answer/answer_controller_impl.go:114.2,121.26 4 1
+nozzlium/kepo_backend/answer/answer_controller_impl.go:110.19,111.37 1 1
+nozzlium/kepo_backend/answer/answer_controller_impl.go:125.129,131.16 5 1
+nozzlium/kepo_backend/answer/answer_controller_impl.go:135.2,157.26 7 1
+nozzlium/kepo_backend/answer/answer_controller_impl.go:131.16,132.39 1 1
 nozzlium/kepo_backend/answer/answer_service_impl.go:19.124,26.2 2 1
 nozzlium/kepo_backend/answer/answer_service_impl.go:28.123,35.2 2 1

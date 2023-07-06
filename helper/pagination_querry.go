@@ -14,7 +14,7 @@ func GetPaginationParamFromQuerry(
 
 	queries := request.URL.Query()
 	pageNo, err := strconv.Atoi(queries.Get(constants.PAGE_NO))
-	if err != nil {
+	if err != nil && pageNo > 0 {
 		pagination.PageNo = pageNo
 	}
 

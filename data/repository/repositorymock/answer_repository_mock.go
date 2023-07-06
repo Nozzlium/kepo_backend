@@ -11,7 +11,7 @@ import (
 )
 
 type AnswerRepositoryMock struct {
-	Mock mock.Mock
+	Mock *mock.Mock
 }
 
 func (repository *AnswerRepositoryMock) Insert(ctx context.Context, DB *gorm.DB, answer entity.Answer) (entity.Answer, error) {

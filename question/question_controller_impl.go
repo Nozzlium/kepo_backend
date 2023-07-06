@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"nozzlium/kepo_backend/constants"
-	"nozzlium/kepo_backend/customerror"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
 	"nozzlium/kepo_backend/data/requestbody"
 	"nozzlium/kepo_backend/data/response"
+	"nozzlium/kepo_backend/exception"
 	"nozzlium/kepo_backend/helper"
 	"nozzlium/kepo_backend/tools"
 	"strconv"
@@ -25,7 +25,7 @@ type QuestionControllerImpl struct {
 func (controller *QuestionControllerImpl) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	claims, ok := request.Context().Value(constants.USER_ID_CLAIMS).(tools.JwtClaims)
 	if !ok {
-		panic(customerror.UnauthorizedError{})
+		panic(exception.UnauthorizedError{})
 	}
 
 	body := requestbody.Question{}
@@ -35,7 +35,7 @@ func (controller *QuestionControllerImpl) Create(writer http.ResponseWriter, req
 
 	err = controller.Validator.Struct(body)
 	if err != nil {
-		panic(customerror.BadRequestError{})
+		panic(exception.BadRequestError{})
 	}
 
 	question, err := controller.QuestionService.CreateQuestion(
@@ -68,7 +68,7 @@ func (controller *QuestionControllerImpl) Create(writer http.ResponseWriter, req
 func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	claims, ok := request.Context().Value(constants.USER_ID_CLAIMS).(tools.JwtClaims)
 	if !ok {
-		panic(customerror.UnauthorizedError{})
+		panic(exception.UnauthorizedError{})
 	}
 
 	questionParam := param.InitQuestionParam()
@@ -98,7 +98,7 @@ func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, reques
 func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	claims, ok := request.Context().Value(constants.USER_ID_CLAIMS).(tools.JwtClaims)
 	if !ok {
-		panic(customerror.UnauthorizedError{})
+		panic(exception.UnauthorizedError{})
 	}
 
 	questionParam := param.InitQuestionParam()
@@ -107,7 +107,7 @@ func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, re
 	idString := params.ByName("id")
 	id, err := strconv.ParseUint(idString, 10, 32)
 	if err != nil {
-		panic(customerror.BadRequestError{})
+		panic(exception.BadRequestError{})
 	}
 	questionParam.Question.ID = uint(id)
 
@@ -115,7 +115,7 @@ func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, re
 	helper.PanicIfError(err)
 
 	if len(questions) < 1 {
-		panic(customerror.NotFoundError{})
+		panic(exception.NotFoundError{})
 	}
 
 	webResponse := response.WebResponse{
@@ -131,13 +131,13 @@ func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, re
 func (controller *QuestionControllerImpl) GetByUser(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	claims, ok := request.Context().Value(constants.USER_ID_CLAIMS).(tools.JwtClaims)
 	if !ok {
-		panic(customerror.UnauthorizedError{})
+		panic(exception.UnauthorizedError{})
 	}
 
 	userIdString := params.ByName("userId")
 	userId, err := strconv.ParseUint(userIdString, 10, 32)
 	if err != nil {
-		panic(customerror.BadRequestError{})
+		panic(exception.BadRequestError{})
 	}
 
 	questionParam := param.InitQuestionParam()

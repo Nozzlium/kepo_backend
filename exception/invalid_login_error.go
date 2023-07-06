@@ -1,4 +1,4 @@
-package customerror
+package exception
 
 import "nozzlium/kepo_backend/constants"
 

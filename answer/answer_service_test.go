@@ -4,54 +4,14 @@ import (
 	"context"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
-	"nozzlium/kepo_backend/data/repository/repositorymock"
-	"nozzlium/kepo_backend/data/repository/result"
 	"nozzlium/kepo_backend/data/response"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"gorm.io/gorm"
 )
 
-var answerRepositoryMock = repositorymock.AnswerRepositoryMock{Mock: mock.Mock{}}
-var answerService = AnswerServiceImpl{
-	AnswerRepository: &answerRepositoryMock,
-}
-
-var expectedAnswers = []result.AnswerResult{
-	{
-		ID:         1,
-		QuestionID: 1,
-		UserID:     1,
-		Username:   "user1",
-		Likes:      10,
-		IsLiked:    0,
-	},
-	{
-		ID:         2,
-		QuestionID: 1,
-		UserID:     2,
-		Username:   "user2",
-		Likes:      5,
-		IsLiked:    1,
-	},
-}
-
 func TestServiceCreateAnswer(t *testing.T) {
-	mockCall := answerRepositoryMock.Mock.On("Insert",
-		mock.Anything,
-		mock.Anything,
-		mock.Anything,
-	).Return(
-		entity.Answer{
-			ID:         1,
-			UserID:     1,
-			Content:    "test",
-			QuestionID: 1,
-		},
-		nil,
-	)
+	mockCall := mockReturnCreatedAnswer()
 	response, err := answerService.CreateAnswer(
 		context.Background(),
 		entity.Answer{
@@ -67,11 +27,7 @@ func TestServiceCreateAnswer(t *testing.T) {
 }
 
 func TestFailCreateAnswer(t *testing.T) {
-	mockCall := answerRepositoryMock.Mock.On("Insert",
-		mock.Anything,
-		mock.Anything,
-		mock.Anything,
-	).Return(entity.Answer{}, gorm.ErrInvalidField)
+	mockCall := mockCreateAnswerError()
 	_, err := answerService.CreateAnswer(
 		context.Background(),
 		entity.Answer{
@@ -85,14 +41,7 @@ func TestFailCreateAnswer(t *testing.T) {
 }
 
 func TestGetAnswers(t *testing.T) {
-	mockCall := answerRepositoryMock.Mock.On("FindDetailed",
-		mock.Anything,
-		mock.Anything,
-		mock.Anything,
-	).Return(
-		expectedAnswers,
-		nil,
-	)
+	mockCall := mockReturnAnswers()
 	resp, err := answerService.FindBy(
 		context.Background(),
 		param.AnswerParam{},
@@ -105,4 +54,16 @@ func TestGetAnswers(t *testing.T) {
 	}
 	assert.Equal(t, uint(1), resp[0].ID)
 	assert.Equal(t, uint(2), resp[1].ID)
+}
+
+func TestGetAnswersError(t *testing.T) {
+	mockCall := mockReturnAnswersError()
+
+	_, err := answerService.FindBy(
+		context.Background(),
+		param.AnswerParam{},
+	)
+	assert.NotNil(t, err)
+
+	mockCall.Unset()
 }

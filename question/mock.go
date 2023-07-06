@@ -1,19 +1,16 @@
 package question
 
 import (
-	"context"
-	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/repository/repositorymock"
 	"nozzlium/kepo_backend/data/repository/result"
 	"nozzlium/kepo_backend/data/requestbody"
-	"nozzlium/kepo_backend/tools"
 
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 )
 
-var questionRepositoryMock = repositorymock.QuestionRepositoryMock{Mock: mock.Mock{}}
+var questionRepositoryMock = repositorymock.QuestionRepositoryMock{Mock: &mock.Mock{}}
 
 var expectedQuestions = []result.QuestionResult{
 	{
@@ -61,14 +58,6 @@ var createRequestBody = requestbody.Question{
 	CategoryID:  1,
 	Content:     "test",
 	Description: "test",
-}
-
-var claimContext = tools.JwtClaims{
-	UserId: 1,
-}
-
-func getClaimContext(parent context.Context) context.Context {
-	return context.WithValue(parent, constants.USER_ID_CLAIMS, claimContext)
 }
 
 func mockReturnInsertSuccess() *mock.Call {

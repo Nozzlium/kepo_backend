@@ -1,4 +1,4 @@
-package customerror
+package exception
 
 type BadRequestError struct {
 }
