@@ -1,5 +1,21 @@
 package response
 
+type AnswersWebResponse struct {
+	BaseResponse
+	Data AnswersResponse `json:"data"`
+}
+
+type AnswerWebResponse struct {
+	BaseResponse
+	Data AnswerResponse `json:"data"`
+}
+
+type AnswersResponse struct {
+	Page     int `json:"page"`
+	PageSize int `json:"pageSize"`
+	Answers  []AnswerResponse
+}
+
 type AnswerResponse struct {
 	ID         uint         `json:"id"`
 	Content    string       `json:"content"`

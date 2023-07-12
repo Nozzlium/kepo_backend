@@ -14,14 +14,16 @@ var questionRepositoryMock = repositorymock.QuestionRepositoryMock{Mock: &mock.M
 
 var expectedQuestions = []result.QuestionResult{
 	{
-		ID:       1,
-		UserID:   1,
-		Username: "User1",
+		ID:         1,
+		UserID:     1,
+		Username:   "User1",
+		CategoryID: 1,
 	},
 	{
-		ID:       2,
-		UserID:   2,
-		Username: "User2",
+		ID:         2,
+		UserID:     2,
+		Username:   "User2",
+		CategoryID: 2,
 	},
 }
 
@@ -33,14 +35,6 @@ var expectedQuestionsSameUser = []result.QuestionResult{
 	},
 	{
 		ID:       3,
-		UserID:   1,
-		Username: "User1",
-	},
-}
-
-var expectedOneQuestion = []result.QuestionResult{
-	{
-		ID:       1,
 		UserID:   1,
 		Username: "User1",
 	},
@@ -122,7 +116,7 @@ func mockReturnOneQuestionSuccess() *mock.Call {
 		mock.Anything,
 		mock.Anything,
 	).Return(
-		expectedOneQuestion,
+		expectedQuestions[0:1],
 		nil,
 	)
 }
@@ -135,5 +129,29 @@ func mockReturnEmptyQuestion() *mock.Call {
 	).Return(
 		[]result.QuestionResult{},
 		nil,
+	)
+}
+
+func mockReturnOneDetailed() *mock.Call {
+	return questionRepositoryMock.Mock.On(
+		"FindOneDetailedBy",
+		mock.Anything,
+		mock.Anything,
+		mock.Anything,
+	).Return(
+		expectedQuestions[0],
+		nil,
+	)
+}
+
+func mockReturnOneNotFound() *mock.Call {
+	return questionRepositoryMock.Mock.On(
+		"FindOneDetailedBy",
+		mock.Anything,
+		mock.Anything,
+		mock.Anything,
+	).Return(
+		result.QuestionResult{},
+		gorm.ErrRecordNotFound,
 	)
 }

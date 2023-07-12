@@ -14,4 +14,5 @@ type AnswerRepository interface {
 	FindBy(ctx context.Context, DB *gorm.DB, param param.AnswerParam) ([]entity.Answer, error)
 	FindOneBy(ctx context.Context, DB *gorm.DB, param param.AnswerParam) (entity.Answer, error)
 	FindDetailed(ctx context.Context, DB *gorm.DB, param param.AnswerParam) ([]result.AnswerResult, error)
+	FindOneDetailed(ctx context.Context, DB *gorm.DB, param param.AnswerParam) (result.AnswerResult, error)
 }

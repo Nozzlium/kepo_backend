@@ -46,15 +46,12 @@ func (controller *AnswerControllerImpl) Create(writer http.ResponseWriter, reque
 	)
 	helper.PanicIfError(err)
 
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data: response.AnswerCreate{
-			ID:         res.ID,
-			UserID:     res.User.ID,
-			QuestionID: res.QuestionID,
-			Content:    res.Content,
+	webResponse := response.AnswerWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
 		},
+		Data: res,
 	}
 	encoder := json.NewEncoder(writer)
 	err = encoder.Encode(&webResponse)
@@ -74,12 +71,14 @@ func (controller *AnswerControllerImpl) Find(writer http.ResponseWriter, request
 	resp, err := controller.AnswerService.FindBy(request.Context(), answerParams)
 	helper.PanicIfError(err)
 
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data: response.AnswerListResponse{
-			PageNo:   uint(answerParams.PageNo),
-			PageSize: uint(len(resp)),
+	webResponse := response.AnswersWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: response.AnswersResponse{
+			Page:     answerParams.PageNo,
+			PageSize: len(resp),
 			Answers:  resp,
 		},
 	}
@@ -111,10 +110,12 @@ func (controller *AnswerControllerImpl) FindById(writer http.ResponseWriter, req
 		panic(exception.NotFoundError{})
 	}
 
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data:   resp[0],
+	webResponse := response.AnswerWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: resp[0],
 	}
 	encoder := json.NewEncoder(writer)
 	err = encoder.Encode(&webResponse)
@@ -143,12 +144,14 @@ func (controller *AnswerControllerImpl) FindByUser(writer http.ResponseWriter, r
 	resp, err := controller.AnswerService.FindBy(request.Context(), answerParams)
 	helper.PanicIfError(err)
 
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data: response.AnswerListResponse{
-			PageNo:   uint(answerParams.PageNo),
-			PageSize: uint(len(resp)),
+	webResponse := response.AnswersWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: response.AnswersResponse{
+			Page:     answerParams.PageNo,
+			PageSize: len(resp),
 			Answers:  resp,
 		},
 	}

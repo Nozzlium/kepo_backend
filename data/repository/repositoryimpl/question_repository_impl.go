@@ -71,12 +71,17 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 	}
 	if param.Question.UserID != 0 {
 		find = find.Where(
-			"u.id = ?", param.Question.UserID,
+			"q.user_id = ?", param.Question.UserID,
 		)
 	}
 	if param.Question.ID != 0 {
 		find = find.Where(
 			"q.id = ?", param.Question.ID,
+		)
+	}
+	if param.Question.CategoryID != 0 {
+		find = find.Where(
+			"q.category_id", param.Question.CategoryID,
 		)
 	}
 	find = find.Group("q.id").
@@ -116,7 +121,7 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 	}
 	if param.Question.UserID != 0 {
 		find = find.Where(
-			"u.id = ?", param.Question.UserID,
+			"q.user_id = ?", param.Question.UserID,
 		)
 	}
 	find = find.First(&question)

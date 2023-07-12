@@ -41,3 +41,13 @@ func (repository *AnswerRepositoryMock) FindDetailed(ctx context.Context, DB *go
 	}
 	return args0.([]result.AnswerResult), args1.(error)
 }
+
+func (repository *AnswerRepositoryMock) FindOneDetailed(ctx context.Context, DB *gorm.DB, param param.AnswerParam) (result.AnswerResult, error) {
+	args := repository.Mock.Called(ctx, DB, param)
+	args0 := args.Get(0)
+	args1 := args.Get(1)
+	if args1 == nil {
+		return args0.(result.AnswerResult), nil
+	}
+	return args0.(result.AnswerResult), args1.(error)
+}

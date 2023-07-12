@@ -16,13 +16,25 @@ type QuestionServiceImpl struct {
 	DB                 *gorm.DB
 }
 
-func (service *QuestionServiceImpl) CreateQuestion(ctx context.Context, question entity.Question) (entity.Question, error) {
+func (service *QuestionServiceImpl) CreateQuestion(ctx context.Context, question entity.Question) (response.QuestionResponse, error) {
 	inserted, err := service.QuestionRepository.Insert(
 		ctx,
 		service.DB,
 		question,
 	)
-	return inserted, err
+	if err != nil {
+		return response.QuestionResponse{}, err
+	}
+	newQuestion, err := service.QuestionRepository.FindOneDetailedBy(
+		ctx,
+		service.DB,
+		param.QuestionParam{
+			Question: entity.Question{
+				ID: inserted.ID,
+			},
+		},
+	)
+	return helper.QuestionResultToResponse(newQuestion), err
 }
 
 func (service *QuestionServiceImpl) FindAll(ctx context.Context, param param.QuestionParam) ([]response.QuestionResponse, error) {

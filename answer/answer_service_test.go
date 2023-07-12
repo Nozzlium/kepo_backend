@@ -12,6 +12,7 @@ import (
 
 func TestServiceCreateAnswer(t *testing.T) {
 	mockCall := mockReturnCreatedAnswer()
+	mockCallInserted := mockReturnOneAnswerDetailed()
 	response, err := answerService.CreateAnswer(
 		context.Background(),
 		entity.Answer{
@@ -21,6 +22,7 @@ func TestServiceCreateAnswer(t *testing.T) {
 		},
 	)
 	mockCall.Unset()
+	mockCallInserted.Unset()
 	assert.Equal(t, uint(1), response.ID)
 	assert.Equal(t, uint(1), response.User.ID)
 	assert.Nil(t, err)

@@ -10,6 +10,7 @@ import (
 	"nozzlium/kepo_backend/data/response"
 	"nozzlium/kepo_backend/exception"
 	"nozzlium/kepo_backend/tools"
+	"strconv"
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
@@ -18,6 +19,7 @@ import (
 
 func TestPostAnswerSuccess(t *testing.T) {
 	mockCall := mockReturnCreatedAnswer()
+	mockCallInserted := mockReturnOneAnswerDetailed()
 
 	createJsonBytes, _ := json.Marshal(createAnswerBody)
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:2637/answer", bytes.NewReader(createJsonBytes))
@@ -28,18 +30,17 @@ func TestPostAnswerSuccess(t *testing.T) {
 
 	res := recorder.Result()
 	respBytes, _ := io.ReadAll(res.Body)
-	resp := response.WebResponse{}
+	resp := response.AnswerWebResponse{}
 	json.Unmarshal(respBytes, &resp)
 
 	assert.Equal(t, http.StatusOK, resp.Code)
-	data := resp.Data.(map[string]interface{})
 
-	assert.NotEqual(t, uint(0), data["id"])
-	assert.Equal(t, tools.ClaimContext.UserId, uint(data["userId"].(float64)))
-	assert.Equal(t, createAnswerBody.QuestionID, uint(data["questionId"].(float64)))
-	assert.Equal(t, createAnswerBody.Content, data["content"])
+	assert.Equal(t, tools.ClaimContext.UserId, resp.Data.User.ID)
+	assert.Equal(t, createAnswerBody.QuestionID, resp.Data.ID)
+	assert.Equal(t, createAnswerBody.Content, resp.Data.Content)
 
 	mockCall.Unset()
+	mockCallInserted.Unset()
 }
 
 func TestPostUnauthorized(t *testing.T) {
@@ -120,41 +121,32 @@ func TestGetQuestionsOK(t *testing.T) {
 
 	res := recorder.Result()
 	respBytes, _ := io.ReadAll(res.Body)
-	resp := response.WebResponse{}
+	resp := response.AnswersWebResponse{}
 	json.Unmarshal(respBytes, &resp)
 
 	assert.Equal(t, http.StatusOK, resp.Code)
-	data := resp.Data.(map[string]interface{})
 
 	assert.Equal(
 		t,
 		1,
-		int(data["pageNo"].(float64)),
+		resp.Data.Page,
 	)
 	assert.Equal(
 		t,
 		len(expectedAnswers),
-		int(data["pageSize"].(float64)),
+		resp.Data.PageSize,
 	)
-
-	answers := data["answers"].([]interface{})
-	assert.Equal(
-		t,
-		len(answers),
-		int(data["pageSize"].(float64)),
-	)
-	for i, answer := range answers {
+	for i, answer := range resp.Data.Answers {
 		expectedAnswer := expectedAnswers[i]
-		answerMap := answer.(map[string]interface{})
 		assert.Equal(
 			t,
 			expectedAnswer.ID,
-			uint(answerMap["id"].(float64)),
+			answer.ID,
 		)
 		assert.Equal(
 			t,
 			expectedAnswer.QuestionID,
-			uint(answerMap["questionId"].(float64)),
+			answer.QuestionID,
 		)
 	}
 
@@ -302,9 +294,10 @@ func TestGetAnswerByUser(t *testing.T) {
 	ctx := tools.GetMockClaimContext(request.Context())
 	recorder := httptest.NewRecorder()
 
+	var userId uint = 1
 	routerParam := httprouter.Param{
 		Key:   "userId",
-		Value: "1",
+		Value: strconv.FormatUint(uint64(userId), 10),
 	}
 	answerController.FindByUser(recorder, request.WithContext(ctx), httprouter.Params{
 		routerParam,
@@ -312,48 +305,43 @@ func TestGetAnswerByUser(t *testing.T) {
 
 	res := recorder.Result()
 	respBytes, _ := io.ReadAll(res.Body)
-	resp := response.WebResponse{}
+	resp := response.AnswersWebResponse{}
 	json.Unmarshal(respBytes, &resp)
 
 	assert.Equal(t, http.StatusOK, resp.Code)
-	data := resp.Data.(map[string]interface{})
 
 	assert.Equal(
 		t,
 		1,
-		int(data["pageNo"].(float64)),
+		resp.Data.Page,
 	)
 	assert.Equal(
 		t,
 		len(expectedAnswers),
-		int(data["pageSize"].(float64)),
+		resp.Data.PageSize,
 	)
 
-	answers := data["answers"].([]interface{})
-	assert.Equal(
-		t,
-		len(answers),
-		int(data["pageSize"].(float64)),
-	)
-	for i, answer := range answers {
+	for i, answer := range resp.Data.Answers {
 		expectedAnswer := expectedAnswersFromSameUser[i]
-		answerMap := answer.(map[string]interface{})
 		assert.Equal(
 			t,
 			expectedAnswer.ID,
-			uint(answerMap["id"].(float64)),
+			answer.ID,
 		)
 		assert.Equal(
 			t,
 			expectedAnswer.QuestionID,
-			uint(answerMap["questionId"].(float64)),
+			answer.QuestionID,
 		)
-		userMap := answerMap["user"].(map[string]interface{})
-		userId := uint(userMap["id"].(float64))
+		assert.Equal(
+			t,
+			userId,
+			answer.User.ID,
+		)
 		assert.Equal(
 			t,
 			expectedAnswer.UserID,
-			userId,
+			answer.User.ID,
 		)
 	}
 

@@ -23,6 +23,7 @@ func TestCreateQuestionSuccess(t *testing.T) {
 		expectedInsertedQuestion,
 		nil,
 	)
+	mockCallQuestion := mockReturnOneDetailed()
 	question, err := questionService.CreateQuestion(
 		context.Background(),
 		entity.Question{
@@ -33,9 +34,12 @@ func TestCreateQuestionSuccess(t *testing.T) {
 		},
 	)
 	mockCall.Unset()
+	mockCallQuestion.Unset()
 
 	assert.Nil(t, err)
-	assert.Equal(t, uint(1), question.ID)
+	assert.Equal(t, uint(expectedQuestions[0].ID), question.ID)
+	assert.Equal(t, uint(expectedQuestions[0].UserID), question.User.ID)
+	assert.Equal(t, uint(expectedQuestions[0].CategoryID), question.Category.ID)
 }
 
 func TestCreateQuestionFail(t *testing.T) {

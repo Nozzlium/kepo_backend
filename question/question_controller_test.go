@@ -12,11 +12,13 @@ import (
 	"nozzlium/kepo_backend/data/response"
 	"nozzlium/kepo_backend/exception"
 	"nozzlium/kepo_backend/tools"
+	"strconv"
 	"testing"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 var questionController = QuestionControllerImpl{
@@ -26,6 +28,7 @@ var questionController = QuestionControllerImpl{
 
 func TestPostCreateSuccess(t *testing.T) {
 	mockCall := mockReturnInsertSuccess()
+	mockCallGet := mockReturnOneDetailed()
 	createJsonBytes, _ := json.Marshal(createRequestBody)
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:2637/question", bytes.NewReader(createJsonBytes))
 	ctx := tools.GetMockClaimContext(request.Context())
@@ -35,16 +38,16 @@ func TestPostCreateSuccess(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, recorder.Code)
 	mockCall.Unset()
+	mockCallGet.Unset()
 
 	res := recorder.Result()
 	respBytes, _ := io.ReadAll(res.Body)
-	resp := response.WebResponse{}
+	resp := response.QuestionWebResponse{}
 	json.Unmarshal(respBytes, &resp)
-	data := resp.Data.(map[string]interface{})
 
-	assert.NotEqual(t, uint(0), data["id"])
-	assert.Equal(t, tools.ClaimContext.UserId, uint(data["userId"].(float64)))
-	assert.Equal(t, createRequestBody.CategoryID, uint(data["categoryId"].(float64)))
+	assert.NotEqual(t, uint(0), resp.Data.ID)
+	assert.Equal(t, tools.ClaimContext.UserId, resp.Data.User.ID)
+	assert.Equal(t, createRequestBody.CategoryID, uint(resp.Data.Category.ID))
 }
 
 func TestPostCreateError(t *testing.T) {
@@ -101,24 +104,21 @@ func TestControllerGetQuestionsSuccess(t *testing.T) {
 
 	questionController.Get(recorder, request.WithContext(ctx), nil)
 
-	webResponse := response.WebResponse{}
+	webResponse := response.QuestionsWebResponse{}
 	resp := recorder.Result()
 	decoder := json.NewDecoder(resp.Body)
 	decoder.Decode(&webResponse)
 
 	assert.Equal(t, http.StatusOK, webResponse.Code)
 
-	dataResponse := webResponse.Data.(map[string]interface{})
-	pageNo := uint(dataResponse["pageNo"].(float64))
-	pageSize := uint(dataResponse["pageSize"].(float64))
-	assert.Equal(t, uint(1), pageNo)
-	assert.Equal(t, uint(2), pageSize)
+	assert.Equal(t, 1, webResponse.Data.Page)
+	assert.Equal(t, 2, webResponse.Data.PageSize)
 
-	questions := dataResponse["questions"].([]interface{})
-	for i, question := range questions {
+	for i, question := range webResponse.Data.Questions {
 		mockQuestion := expectedQuestions[i]
-		questionId := uint(question.(map[string]interface{})["id"].(float64))
-		assert.Equal(t, mockQuestion.ID, questionId)
+		assert.Equal(t, mockQuestion.ID, question.ID)
+		assert.Equal(t, mockQuestion.UserID, question.User.ID)
+		assert.Equal(t, mockQuestion.CategoryID, question.Category.ID)
 	}
 
 	mockCall.Unset()
@@ -157,7 +157,7 @@ func TestGetQuestionsUnauthorized(t *testing.T) {
 }
 
 func TestControllerGetQuestionById(t *testing.T) {
-	mockCall := mockReturnOneQuestionSuccess()
+	mockCall := mockReturnOneDetailed()
 
 	request := httptest.NewRequest(http.MethodGet, "http://localhost:2637/question/1", nil)
 	ctx := context.WithValue(request.Context(), constants.USER_ID_CLAIMS, tools.JwtClaims{
@@ -176,21 +176,20 @@ func TestControllerGetQuestionById(t *testing.T) {
 		params,
 	)
 
-	webResponse := response.WebResponse{}
+	webResponse := response.QuestionWebResponse{}
 	res := recorder.Result()
 	decoder := json.NewDecoder(res.Body)
 	decoder.Decode(&webResponse)
 
 	assert.Equal(t, http.StatusOK, webResponse.Code)
-
-	dataResponse := webResponse.Data.(map[string]interface{})
-	assert.Equal(t, expectedOneQuestion[0].ID, uint(dataResponse["id"].(float64)))
+	assert.Equal(t, expectedQuestions[0].ID, webResponse.Data.ID)
+	assert.Equal(t, expectedQuestions[0].UserID, webResponse.Data.User.ID)
+	assert.Equal(t, expectedQuestions[0].CategoryID, webResponse.Data.Category.ID)
 
 	mockCall.Unset()
 }
 
 func TestGetQuestionByIdUnauthorized(t *testing.T) {
-	mockCall := mockReturnOneQuestionSuccess()
 
 	request := httptest.NewRequest(http.MethodGet, "http://localhost:2637/question/1", nil)
 	recorder := httptest.NewRecorder()
@@ -211,12 +210,9 @@ func TestGetQuestionByIdUnauthorized(t *testing.T) {
 			)
 		},
 	)
-
-	mockCall.Unset()
 }
 
 func TestControllerGetQuestionByIdBadRequest(t *testing.T) {
-	mockCall := mockReturnOneQuestionSuccess()
 
 	request := httptest.NewRequest(http.MethodGet, "http://localhost:2637/question/1", nil)
 	ctx := context.WithValue(request.Context(), constants.USER_ID_CLAIMS, tools.JwtClaims{
@@ -240,12 +236,10 @@ func TestControllerGetQuestionByIdBadRequest(t *testing.T) {
 			)
 		},
 	)
-
-	mockCall.Unset()
 }
 
 func TestGetOneQuestionNotFound(t *testing.T) {
-	mockCall := mockReturnEmptyQuestion()
+	mockCall := mockReturnOneNotFound()
 	request := httptest.NewRequest(http.MethodGet, "http://localhost:2637/question/1", nil)
 	ctx := context.WithValue(request.Context(), constants.USER_ID_CLAIMS, tools.JwtClaims{
 		UserId: 1,
@@ -259,7 +253,7 @@ func TestGetOneQuestionNotFound(t *testing.T) {
 	})
 	assert.PanicsWithError(
 		t,
-		exception.NotFoundError{}.Error(),
+		gorm.ErrRecordNotFound.Error(),
 		func() {
 			questionController.GetById(
 				recorder,
@@ -280,33 +274,29 @@ func TestGetQuestionsByUserSuccess(t *testing.T) {
 	})
 	recorder := httptest.NewRecorder()
 
+	var expectedId uint = 1
 	params := httprouter.Params{}
 	params = append(params, httprouter.Param{
 		Key:   "userId",
-		Value: "1",
+		Value: strconv.Itoa(int(expectedId)),
 	})
 
 	questionController.GetByUser(recorder, request.WithContext(ctx), params)
 
-	webResponse := response.WebResponse{}
+	webResponse := response.QuestionsWebResponse{}
 	resp := recorder.Result()
 	decoder := json.NewDecoder(resp.Body)
 	decoder.Decode(&webResponse)
 
 	assert.Equal(t, http.StatusOK, webResponse.Code)
+	assert.Equal(t, 1, webResponse.Data.Page)
+	assert.Equal(t, 2, webResponse.Data.PageSize)
 
-	dataResponse := webResponse.Data.(map[string]interface{})
-	pageNo := uint(dataResponse["pageNo"].(float64))
-	pageSize := uint(dataResponse["pageSize"].(float64))
-	assert.Equal(t, uint(1), pageNo)
-	assert.Equal(t, uint(2), pageSize)
-
-	questions := dataResponse["questions"].([]interface{})
-	for i, question := range questions {
+	for i, question := range webResponse.Data.Questions {
 		mockQuestion := expectedQuestionsSameUser[i]
-		questionId := uint(question.(map[string]interface{})["id"].(float64))
-		assert.Equal(t, mockQuestion.ID, questionId)
-		assert.Equal(t, uint(1), mockQuestion.UserID)
+		assert.Equal(t, mockQuestion.ID, question.ID)
+		assert.Equal(t, mockQuestion.UserID, question.User.ID)
+		assert.Equal(t, expectedId, question.User.ID)
 	}
 
 	mockCall.Unset()
@@ -372,21 +362,17 @@ func TestGetQuestionNoData(t *testing.T) {
 
 	questionController.Get(recorder, request.WithContext(ctx), nil)
 
-	webResponse := response.WebResponse{}
+	webResponse := response.QuestionsWebResponse{}
 	resp := recorder.Result()
 	decoder := json.NewDecoder(resp.Body)
 	decoder.Decode(&webResponse)
 
 	assert.Equal(t, http.StatusOK, webResponse.Code)
 
-	dataResponse := webResponse.Data.(map[string]interface{})
-	pageNo := uint(dataResponse["pageNo"].(float64))
-	pageSize := uint(dataResponse["pageSize"].(float64))
-	assert.Equal(t, uint(1), pageNo)
-	assert.Equal(t, uint(0), pageSize)
+	assert.Equal(t, 1, webResponse.Data.Page)
+	assert.Equal(t, 0, webResponse.Data.PageSize)
 
-	questions := dataResponse["questions"].([]interface{})
-	assert.Empty(t, questions)
+	assert.Empty(t, webResponse.Data.Questions)
 
 	mockCall.Unset()
 }

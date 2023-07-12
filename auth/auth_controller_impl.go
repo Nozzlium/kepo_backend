@@ -37,10 +37,12 @@ func (controller *AuthControllerImpl) Register(writer http.ResponseWriter, reque
 	)
 	helper.PanicIfError(err)
 
-	respBody := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data:   resp,
+	respBody := response.UserWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: resp,
 	}
 	encoder := json.NewEncoder(writer)
 	encoder.Encode(&respBody)
@@ -64,10 +66,12 @@ func (controller *AuthControllerImpl) Login(writer http.ResponseWriter, request 
 	)
 	helper.PanicIfError(err)
 
-	respBody := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data:   resp,
+	respBody := response.AuthWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: resp,
 	}
 	encoder := json.NewEncoder(writer)
 	encoder.Encode(&respBody)

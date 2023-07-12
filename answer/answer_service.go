@@ -10,4 +10,5 @@ import (
 type AnswerService interface {
 	CreateAnswer(ctx context.Context, answer entity.Answer) (response.AnswerResponse, error)
 	FindBy(ctx context.Context, param param.AnswerParam) ([]response.AnswerResponse, error)
+	FindOneBy(ctx context.Context, param param.AnswerParam) (response.AnswerResponse, error)
 }

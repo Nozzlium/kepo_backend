@@ -49,6 +49,7 @@ var expectedAnswers = []result.AnswerResult{
 		Username:   "user1",
 		Likes:      10,
 		IsLiked:    0,
+		Content:    "test",
 	},
 	{
 		ID:         2,
@@ -57,6 +58,7 @@ var expectedAnswers = []result.AnswerResult{
 		Username:   "user2",
 		Likes:      5,
 		IsLiked:    1,
+		Content:    "test",
 	},
 }
 
@@ -166,5 +168,27 @@ func mockReturnAnswersError() *mock.Call {
 	).Return(
 		[]result.AnswerResult{},
 		gorm.ErrInvalidDB,
+	)
+}
+
+func mockReturnOneAnswerDetailed() *mock.Call {
+	return answerRepositoryMock.Mock.On("FindOneDetailed",
+		mock.Anything,
+		mock.Anything,
+		mock.Anything,
+	).Return(
+		expectedAnswers[0],
+		nil,
+	)
+}
+
+func mockReturnOneAnswerDetailedError() *mock.Call {
+	return answerRepositoryMock.Mock.On("FindOneDetailed",
+		mock.Anything,
+		mock.Anything,
+		mock.Anything,
+	).Return(
+		result.AnswerResult{},
+		gorm.ErrRecordNotFound,
 	)
 }

@@ -22,7 +22,19 @@ func (service *AnswerServiceImpl) CreateAnswer(ctx context.Context, answer entit
 		service.DB,
 		answer,
 	)
-	return helper.AnswerEntityToResponse(ans), err
+	if err != nil {
+		return response.AnswerResponse{}, err
+	}
+	res, err := service.AnswerRepository.FindOneDetailed(
+		ctx,
+		service.DB,
+		param.AnswerParam{
+			Answer: entity.Answer{
+				ID: ans.ID,
+			},
+		},
+	)
+	return helper.AnswerResultToResponse(res), err
 }
 
 func (service *AnswerServiceImpl) FindBy(ctx context.Context, param param.AnswerParam) ([]response.AnswerResponse, error) {
@@ -32,4 +44,13 @@ func (service *AnswerServiceImpl) FindBy(ctx context.Context, param param.Answer
 		param,
 	)
 	return helper.AnswersResultSliceToResponsesSlice(answers), err
+}
+
+func (service *AnswerServiceImpl) FindOneBy(ctx context.Context, param param.AnswerParam) (response.AnswerResponse, error) {
+	answer, err := service.AnswerRepository.FindOneDetailed(
+		ctx,
+		service.DB,
+		param,
+	)
+	return helper.AnswerResultToResponse(answer), err
 }

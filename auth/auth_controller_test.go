@@ -54,14 +54,13 @@ func TestPostRegisterSuccess(t *testing.T) {
 
 	resp := recorder.Result()
 	decoder := json.NewDecoder(resp.Body)
-	body := response.WebResponse{}
+	body := response.UserWebResponse{}
 	decoder.Decode(&body)
 
 	assert.Equal(t, body.Code, http.StatusOK)
 
-	userResponse := body.Data.(map[string]interface{})
-	assert.NotEqual(t, uint(0), uint(userResponse["id"].(float64)))
-	assert.Equal(t, "user", userResponse["username"])
+	assert.NotEqual(t, uint(0), body.Data.ID)
+	assert.Equal(t, "user", body.Data.Username)
 }
 
 func TestInvalidEmailBody(t *testing.T) {
@@ -181,14 +180,13 @@ func TestPostLoginSuccess(t *testing.T) {
 
 	resp := recorder.Result()
 	decoder := json.NewDecoder(resp.Body)
-	body := response.WebResponse{}
+	body := response.AuthWebResponse{}
 	decoder.Decode(&body)
 
 	assert.Equal(t, body.Code, http.StatusOK)
 
-	userResponse := body.Data.(map[string]interface{})
-	assert.NotNil(t, userResponse["Token"])
-	assert.NotEmpty(t, userResponse["Token"])
+	assert.NotNil(t, body.Data.Token)
+	assert.NotEmpty(t, body.Data.Token)
 }
 
 func TestPostLoginNoUser(t *testing.T) {

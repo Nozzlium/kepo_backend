@@ -2,6 +2,7 @@ package question
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/entity"
@@ -49,16 +50,12 @@ func (controller *QuestionControllerImpl) Create(writer http.ResponseWriter, req
 	)
 	helper.PanicIfError(err)
 
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data: response.QuestionCreate{
-			ID:          question.ID,
-			UserID:      question.UserID,
-			CategoryID:  question.CategoryID,
-			Content:     question.Content,
-			Description: question.Description,
+	webResponse := response.QuestionWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
 		},
+		Data: question,
 	}
 	encoder := json.NewEncoder(writer)
 	err = encoder.Encode(&webResponse)
@@ -79,17 +76,22 @@ func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, reques
 	questions, err := controller.QuestionService.FindAll(request.Context(), questionParam)
 	helper.PanicIfError(err)
 
-	questionsListResponse := response.QuestionsList{
-		PageNo:    uint(questionParam.PageNo),
-		PageSize:  uint(len(questions)),
+	questionsListResponse := response.QuestionsResponse{
+		Page:      questionParam.PageNo,
+		PageSize:  len(questions),
 		Questions: questions,
 	}
 
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data:   questionsListResponse,
+	fmt.Println(questionsListResponse)
+
+	webResponse := response.QuestionsWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: questionsListResponse,
 	}
+
 	encoder := json.NewEncoder(writer)
 	err = encoder.Encode(&webResponse)
 	helper.PanicIfError(err)
@@ -111,17 +113,13 @@ func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, re
 	}
 	questionParam.Question.ID = uint(id)
 
-	questions, err := controller.QuestionService.FindAll(request.Context(), questionParam)
+	question, err := controller.QuestionService.FindOneBy(request.Context(), questionParam)
 	helper.PanicIfError(err)
-
-	if len(questions) < 1 {
-		panic(exception.NotFoundError{})
-	}
 
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: constants.STATUS_OK,
-		Data:   questions[0],
+		Data:   question,
 	}
 	encoder := json.NewEncoder(writer)
 	err = encoder.Encode(&webResponse)
@@ -151,16 +149,18 @@ func (controller *QuestionControllerImpl) GetByUser(writer http.ResponseWriter, 
 	)
 	helper.PanicIfError(err)
 
-	questionsListResponse := response.QuestionsList{
-		PageNo:    uint(questionParam.PageNo),
-		PageSize:  uint(len(questions)),
+	questionsListResponse := response.QuestionsResponse{
+		Page:      questionParam.PageNo,
+		PageSize:  len(questions),
 		Questions: questions,
 	}
 
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data:   questionsListResponse,
+	webResponse := response.QuestionsWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: questionsListResponse,
 	}
 	encoder := json.NewEncoder(writer)
 	err = encoder.Encode(&webResponse)
