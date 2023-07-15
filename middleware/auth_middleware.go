@@ -8,30 +8,28 @@ import (
 	"nozzlium/kepo_backend/helper"
 	"nozzlium/kepo_backend/tools"
 	"strings"
-
-	"github.com/julienschmidt/httprouter"
 )
 
 type AuthMiddleware struct {
-	Handler httprouter.Handle
+	Handler http.Handler
 }
 
 func NewAuthMiddleware(
-	handle httprouter.Handle,
-) AuthMiddleware {
-	return AuthMiddleware{Handler: handle}
+	handle http.Handler,
+) *AuthMiddleware {
+	return &AuthMiddleware{Handler: handle}
 }
 
-func (middleware *AuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	auth := r.Header.Get("Authorization")
+func (middleware *AuthMiddleware) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	auth := request.Header.Get("Authorization")
 	token := strings.Split(auth, " ")
 	if token[0] != "Bearer" {
 		helper.PanicIfError(exception.BadRequestError{})
 	}
 	claims, err := tools.ParseJWTToken(token[1])
-	ctx := r.Context()
+	ctx := request.Context()
 	if err == nil {
-		ctx = context.WithValue(r.Context(), constants.USER_ID_CLAIMS, claims)
+		ctx = context.WithValue(request.Context(), constants.USER_ID_CLAIMS, claims)
 	}
-	middleware.Handler(w, r.WithContext(ctx), params)
+	middleware.Handler.ServeHTTP(writer, request.WithContext(ctx))
 }

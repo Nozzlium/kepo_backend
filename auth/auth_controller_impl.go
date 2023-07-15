@@ -18,6 +18,16 @@ type AuthControllerImpl struct {
 	Validator   *validator.Validate
 }
 
+func NewAuthController(
+	authService AuthService,
+	validator *validator.Validate,
+) *AuthControllerImpl {
+	return &AuthControllerImpl{
+		AuthService: authService,
+		Validator:   validator,
+	}
+}
+
 func (controller *AuthControllerImpl) Register(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	body := requestbody.Register{}
 	decoder := json.NewDecoder(request.Body)

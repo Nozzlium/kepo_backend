@@ -20,6 +20,16 @@ type AnswerLikeControllerImpl struct {
 	Validator         *validator.Validate
 }
 
+func NewAnswerLikeController(
+	answerLikeService AnswerLikeService,
+	validator *validator.Validate,
+) *AnswerLikeControllerImpl {
+	return &AnswerLikeControllerImpl{
+		AnswerLikeService: answerLikeService,
+		Validator:         validator,
+	}
+}
+
 func (controller *AnswerLikeControllerImpl) Like(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	claims, err := tools.GetClaimsFromContext(request.Context())
 	helper.PanicIfError(err)
