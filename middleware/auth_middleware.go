@@ -29,9 +29,9 @@ func (middleware *AuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		helper.PanicIfError(exception.BadRequestError{})
 	}
 	claims, err := tools.ParseJWTToken(token[1])
-	if err != nil {
-		panic(exception.UnauthorizedError{})
+	ctx := r.Context()
+	if err == nil {
+		ctx = context.WithValue(r.Context(), constants.USER_ID_CLAIMS, claims)
 	}
-	ctx := context.WithValue(r.Context(), constants.USER_ID_CLAIMS, claims)
 	middleware.Handler(w, r.WithContext(ctx), params)
 }

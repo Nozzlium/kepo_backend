@@ -17,6 +17,18 @@ type AnswerLikeServiceImpl struct {
 	DB                   *gorm.DB
 }
 
+func NewAnswerLikeService(
+	answerLikeRepository repository.AnswerLikeRepository,
+	answerRepository repository.AnswerRepository,
+	DB *gorm.DB,
+) *AnswerLikeServiceImpl {
+	return &AnswerLikeServiceImpl{
+		AnswerLikeRepository: answerLikeRepository,
+		AnswerRepository:     answerRepository,
+		DB:                   DB,
+	}
+}
+
 func (service *AnswerLikeServiceImpl) AssignLike(ctx context.Context, params param.AnswerLikeParam) (response.AnswerLikeResponse, error) {
 	var err error
 	if params.IsLike {

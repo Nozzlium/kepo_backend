@@ -16,6 +16,16 @@ type QuestionServiceImpl struct {
 	DB                 *gorm.DB
 }
 
+func NewQuestionService(
+	questionRepository repository.QuestionRepository,
+	DB *gorm.DB,
+) *QuestionServiceImpl {
+	return &QuestionServiceImpl{
+		QuestionRepository: questionRepository,
+		DB:                 DB,
+	}
+}
+
 func (service *QuestionServiceImpl) CreateQuestion(ctx context.Context, question entity.Question) (response.QuestionResponse, error) {
 	inserted, err := service.QuestionRepository.Insert(
 		ctx,

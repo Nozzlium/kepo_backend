@@ -22,6 +22,16 @@ type AnswerControllerImpl struct {
 	Validator     *validator.Validate
 }
 
+func NewAnswerController(
+	answerService AnswerService,
+	validator *validator.Validate,
+) *AnswerControllerImpl {
+	return &AnswerControllerImpl{
+		AnswerService: answerService,
+		Validator:     validator,
+	}
+}
+
 func (controller *AnswerControllerImpl) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	claims, err := tools.GetClaimsFromContext(request.Context())
 	helper.PanicIfError(err)
@@ -138,6 +148,43 @@ func (controller *AnswerControllerImpl) FindByUser(writer http.ResponseWriter, r
 		UserID:          claims.UserId,
 		Answer: entity.Answer{
 			UserID: uint(userId),
+		},
+	}
+
+	resp, err := controller.AnswerService.FindBy(request.Context(), answerParams)
+	helper.PanicIfError(err)
+
+	webResponse := response.AnswersWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: response.AnswersResponse{
+			Page:     answerParams.PageNo,
+			PageSize: len(resp),
+			Answers:  resp,
+		},
+	}
+	encoder := json.NewEncoder(writer)
+	err = encoder.Encode(&webResponse)
+	helper.PanicIfError(err)
+}
+
+func (controller AnswerControllerImpl) FindByQuestion(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	claims, err := tools.GetClaimsFromContext(request.Context())
+	helper.PanicIfError(err)
+
+	questionIdString := params.ByName("questionId")
+	questionId, err := strconv.ParseUint(questionIdString, 10, 32)
+	if err != nil {
+		panic(exception.BadRequestError{})
+	}
+
+	answerParams := param.AnswerParam{
+		PaginationParam: helper.GetPaginationParamFromQuerry(request),
+		UserID:          claims.UserId,
+		Answer: entity.Answer{
+			QuestionID: uint(questionId),
 		},
 	}
 

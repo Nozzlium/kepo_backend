@@ -81,6 +81,25 @@ var expectedAnswersFromSameUser = []result.AnswerResult{
 	},
 }
 
+var expectedAnswersFromSameQuestion = []result.AnswerResult{
+	{
+		ID:         1,
+		QuestionID: 1,
+		UserID:     1,
+		Username:   "user1",
+		Likes:      10,
+		IsLiked:    0,
+	},
+	{
+		ID:         3,
+		QuestionID: 1,
+		UserID:     1,
+		Username:   "user1",
+		Likes:      5,
+		IsLiked:    1,
+	},
+}
+
 var expectedOneAnswer = []result.AnswerResult{
 	{
 		ID:         1,
@@ -190,5 +209,16 @@ func mockReturnOneAnswerDetailedError() *mock.Call {
 	).Return(
 		result.AnswerResult{},
 		gorm.ErrRecordNotFound,
+	)
+}
+
+func mockReturnAnswerByQuestion() *mock.Call {
+	return answerRepositoryMock.Mock.On("FindDetailed",
+		mock.Anything,
+		mock.Anything,
+		mock.Anything,
+	).Return(
+		expectedAnswersFromSameQuestion,
+		nil,
 	)
 }

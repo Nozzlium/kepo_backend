@@ -10,6 +10,10 @@ import (
 type CategoryRepositoryImpl struct {
 }
 
+func NewCategoryRepository() *CategoryRepositoryImpl {
+	return &CategoryRepositoryImpl{}
+}
+
 func (repository *CategoryRepositoryImpl) Insert(ctx context.Context, DB *gorm.DB, category entity.Category) (entity.Category, error) {
 	insert := DB.WithContext(ctx).Create(&category)
 	return category, insert.Error

@@ -34,22 +34,21 @@ func TestLikeSuccess(t *testing.T) {
 		httprouter.Params{},
 	)
 
-	webResp := response.WebResponse{}
+	webResp := response.AnswerLikeWebResponse{}
 	dec := json.NewDecoder(recorder.Result().Body)
 	dec.Decode(&webResp)
 
 	assert.Equal(t, http.StatusOK, webResp.Code)
 
-	data := webResp.Data.(map[string]interface{})
 	assert.Equal(
 		t,
 		likedAnswer[0].ID,
-		uint(data["answerId"].(float64)),
+		webResp.Data.AnswerID,
 	)
 	assert.Equal(
 		t,
 		true,
-		data["isLiked"].(bool),
+		webResp.Data.IsLiked,
 	)
 
 	mockLike.Unset()
@@ -77,22 +76,21 @@ func TestDislikeSuccess(t *testing.T) {
 		httprouter.Params{},
 	)
 
-	webResp := response.WebResponse{}
+	webResp := response.AnswerLikeWebResponse{}
 	dec := json.NewDecoder(recorder.Result().Body)
 	dec.Decode(&webResp)
 
 	assert.Equal(t, http.StatusOK, webResp.Code)
 
-	data := webResp.Data.(map[string]interface{})
 	assert.Equal(
 		t,
-		dislikedAnswer[0].ID,
-		uint(data["answerId"].(float64)),
+		likedAnswer[0].ID,
+		webResp.Data.AnswerID,
 	)
 	assert.Equal(
 		t,
 		false,
-		data["isLiked"].(bool),
+		webResp.Data.IsLiked,
 	)
 
 	mockLike.Unset()

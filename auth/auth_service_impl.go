@@ -19,6 +19,16 @@ type AuthServiceImpl struct {
 	DB             *gorm.DB
 }
 
+func NewAuthService(
+	userRepository repository.UserRepository,
+	DB *gorm.DB,
+) *AuthServiceImpl {
+	return &AuthServiceImpl{
+		UserRepository: userRepository,
+		DB:             DB,
+	}
+}
+
 func (service *AuthServiceImpl) Register(ctx context.Context, param param.AuthParam) (response.UserResponse, error) {
 	user, err := service.UserRepository.Insert(
 		ctx,

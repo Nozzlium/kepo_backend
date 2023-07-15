@@ -16,6 +16,16 @@ type AnswerServiceImpl struct {
 	DB               *gorm.DB
 }
 
+func NewAnswerService(
+	answerRepository repository.AnswerRepository,
+	DB *gorm.DB,
+) *AnswerServiceImpl {
+	return &AnswerServiceImpl{
+		AnswerRepository: answerRepository,
+		DB:               DB,
+	}
+}
+
 func (service *AnswerServiceImpl) CreateAnswer(ctx context.Context, answer entity.Answer) (response.AnswerResponse, error) {
 	ans, err := service.AnswerRepository.Insert(
 		ctx,

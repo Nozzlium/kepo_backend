@@ -15,6 +15,14 @@ type CategoryControllerImpl struct {
 	CategoryService CategoryService
 }
 
+func NewCategoryController(
+	categoryService CategoryService,
+) *CategoryControllerImpl {
+	return &CategoryControllerImpl{
+		CategoryService: categoryService,
+	}
+}
+
 func (controller *CategoryControllerImpl) Get(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 
 	_, err := tools.GetClaimsFromContext(request.Context())

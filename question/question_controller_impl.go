@@ -23,15 +23,23 @@ type QuestionControllerImpl struct {
 	Validator       *validator.Validate
 }
 
-func (controller *QuestionControllerImpl) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	claims, ok := request.Context().Value(constants.USER_ID_CLAIMS).(tools.JwtClaims)
-	if !ok {
-		panic(exception.UnauthorizedError{})
+func NewQuestionController(
+	questionService QuestionService,
+	validator *validator.Validate,
+) *QuestionControllerImpl {
+	return &QuestionControllerImpl{
+		QuestionService: questionService,
+		Validator:       validator,
 	}
+}
+
+func (controller *QuestionControllerImpl) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	claims, err := tools.GetClaimsFromContext(request.Context())
+	helper.PanicIfError(err)
 
 	body := requestbody.Question{}
 	decoder := json.NewDecoder(request.Body)
-	err := decoder.Decode(&body)
+	err = decoder.Decode(&body)
 	helper.PanicIfError(err)
 
 	err = controller.Validator.Struct(body)
@@ -63,10 +71,8 @@ func (controller *QuestionControllerImpl) Create(writer http.ResponseWriter, req
 }
 
 func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	claims, ok := request.Context().Value(constants.USER_ID_CLAIMS).(tools.JwtClaims)
-	if !ok {
-		panic(exception.UnauthorizedError{})
-	}
+	claims, err := tools.GetClaimsFromContext(request.Context())
+	helper.PanicIfError(err)
 
 	questionParam := param.InitQuestionParam()
 
@@ -98,10 +104,8 @@ func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, reques
 }
 
 func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	claims, ok := request.Context().Value(constants.USER_ID_CLAIMS).(tools.JwtClaims)
-	if !ok {
-		panic(exception.UnauthorizedError{})
-	}
+	claims, err := tools.GetClaimsFromContext(request.Context())
+	helper.PanicIfError(err)
 
 	questionParam := param.InitQuestionParam()
 	questionParam.UserID = claims.UserId
@@ -116,10 +120,12 @@ func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, re
 	question, err := controller.QuestionService.FindOneBy(request.Context(), questionParam)
 	helper.PanicIfError(err)
 
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data:   question,
+	webResponse := response.QuestionWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: question,
 	}
 	encoder := json.NewEncoder(writer)
 	err = encoder.Encode(&webResponse)
@@ -127,10 +133,8 @@ func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, re
 }
 
 func (controller *QuestionControllerImpl) GetByUser(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	claims, ok := request.Context().Value(constants.USER_ID_CLAIMS).(tools.JwtClaims)
-	if !ok {
-		panic(exception.UnauthorizedError{})
-	}
+	claims, err := tools.GetClaimsFromContext(request.Context())
+	helper.PanicIfError(err)
 
 	userIdString := params.ByName("userId")
 	userId, err := strconv.ParseUint(userIdString, 10, 32)

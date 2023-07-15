@@ -34,20 +34,19 @@ func TestLikeQuestionSuccess(t *testing.T) {
 		nil,
 	)
 
-	webResponse := response.WebResponse{}
+	webResponse := response.QuestionLikeWebResponse{}
 	resultBytes, _ := io.ReadAll(recorder.Result().Body)
 	json.Unmarshal(resultBytes, &webResponse)
-	data := webResponse.Data.(map[string]interface{})
 
 	assert.Equal(
 		t,
 		expectedLikedQuestion[0].ID,
-		uint(data["questionId"].(float64)),
+		webResponse.Data.QuestionID,
 	)
 	assert.Equal(
 		t,
 		true,
-		data["isLiked"].(bool),
+		webResponse.Data.IsLiked,
 	)
 
 	mockCallQuestion.Unset()
@@ -75,20 +74,19 @@ func TestDislikeQuestionSuccess(t *testing.T) {
 		nil,
 	)
 
-	webResponse := response.WebResponse{}
+	webResponse := response.QuestionLikeWebResponse{}
 	resultBytes, _ := io.ReadAll(recorder.Result().Body)
 	json.Unmarshal(resultBytes, &webResponse)
-	data := webResponse.Data.(map[string]interface{})
 
 	assert.Equal(
 		t,
 		expectedDislikedQuestion[0].ID,
-		uint(data["questionId"].(float64)),
+		webResponse.Data.QuestionID,
 	)
 	assert.Equal(
 		t,
 		false,
-		data["isLiked"].(bool),
+		webResponse.Data.IsLiked,
 	)
 
 	mockCallQuestion.Unset()

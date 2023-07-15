@@ -20,6 +20,16 @@ type QuestionLikeControllerImpl struct {
 	Validator           *validator.Validate
 }
 
+func NewQuestionLikeController(
+	questionLikeService QuestionLikeService,
+	validator *validator.Validate,
+) *QuestionLikeControllerImpl {
+	return &QuestionLikeControllerImpl{
+		QuestionLikeService: questionLikeService,
+		Validator:           validator,
+	}
+}
+
 func (controller *QuestionLikeControllerImpl) Like(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	claims, err := tools.GetClaimsFromContext(request.Context())
 	helper.PanicIfError(err)
@@ -44,10 +54,12 @@ func (controller *QuestionLikeControllerImpl) Like(writer http.ResponseWriter, r
 	)
 	helper.PanicIfError(err)
 
-	webResponse := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data:   resp,
+	webResponse := response.QuestionLikeWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: resp,
 	}
 	encoder := json.NewEncoder(writer)
 	encoder.Encode(&webResponse)

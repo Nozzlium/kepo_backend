@@ -12,6 +12,10 @@ import (
 type AnswerRepositoryImpl struct {
 }
 
+func NewAnswerRepository() *AnswerRepositoryImpl {
+	return &AnswerRepositoryImpl{}
+}
+
 func (repository *AnswerRepositoryImpl) Insert(ctx context.Context, DB *gorm.DB, answer entity.Answer) (entity.Answer, error) {
 	insert := DB.WithContext(ctx).Create(&answer)
 	return answer, insert.Error

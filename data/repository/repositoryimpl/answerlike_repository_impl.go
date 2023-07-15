@@ -11,6 +11,10 @@ import (
 type AnswerLikeRepositoryImpl struct {
 }
 
+func NewAnswerLikeRepository() *AnswerLikeRepositoryImpl {
+	return &AnswerLikeRepositoryImpl{}
+}
+
 func (repository *AnswerLikeRepositoryImpl) Insert(ctx context.Context, DB *gorm.DB, answerLike entity.AnswerLike) (entity.AnswerLike, error) {
 	create := DB.WithContext(ctx).Create(&answerLike)
 	return answerLike, create.Error

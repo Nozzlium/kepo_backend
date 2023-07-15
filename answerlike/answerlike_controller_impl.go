@@ -44,10 +44,12 @@ func (controller *AnswerLikeControllerImpl) Like(writer http.ResponseWriter, req
 	)
 	helper.PanicIfError(err)
 
-	webResp := response.WebResponse{
-		Code:   http.StatusOK,
-		Status: constants.STATUS_OK,
-		Data:   resp,
+	webResp := response.AnswerLikeWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: resp,
 	}
 
 	encoder := json.NewEncoder(writer)

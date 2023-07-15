@@ -11,4 +11,5 @@ type AnswerController interface {
 	Find(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	FindByUser(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	FindByQuestion(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 }

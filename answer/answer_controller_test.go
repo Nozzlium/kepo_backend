@@ -202,16 +202,15 @@ func TestGetAnswersById(t *testing.T) {
 
 	res := recorder.Result()
 	respBytes, _ := io.ReadAll(res.Body)
-	resp := response.WebResponse{}
+	resp := response.QuestionWebResponse{}
 	json.Unmarshal(respBytes, &resp)
 
 	assert.Equal(t, http.StatusOK, resp.Code)
-	data := resp.Data.(map[string]interface{})
 
 	assert.Equal(
 		t,
 		expectedAnswers[0].ID,
-		uint(data["id"].(float64)),
+		resp.Data.ID,
 	)
 
 	mockCall.Unset()
@@ -403,6 +402,67 @@ func TestGetAnswerByUserServiceError(t *testing.T) {
 			})
 		},
 	)
+
+	mockCall.Unset()
+}
+
+func TestGetAnswerByQuestion(t *testing.T) {
+	mockCall := mockReturnAnswerByQuestion()
+
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:2637/users/1/answer?pageNo=1&pageSize=10", nil)
+	ctx := tools.GetMockClaimContext(request.Context())
+	recorder := httptest.NewRecorder()
+
+	var questionId uint = 1
+	routerParam := httprouter.Param{
+		Key:   "questionId",
+		Value: strconv.FormatUint(uint64(questionId), 10),
+	}
+	answerController.FindByQuestion(recorder, request.WithContext(ctx), httprouter.Params{
+		routerParam,
+	})
+
+	res := recorder.Result()
+	respBytes, _ := io.ReadAll(res.Body)
+	resp := response.AnswersWebResponse{}
+	json.Unmarshal(respBytes, &resp)
+
+	assert.Equal(t, http.StatusOK, resp.Code)
+
+	assert.Equal(
+		t,
+		1,
+		resp.Data.Page,
+	)
+	assert.Equal(
+		t,
+		len(expectedAnswers),
+		resp.Data.PageSize,
+	)
+
+	for i, answer := range resp.Data.Answers {
+		expectedAnswer := expectedAnswersFromSameUser[i]
+		assert.Equal(
+			t,
+			expectedAnswer.ID,
+			answer.ID,
+		)
+		assert.Equal(
+			t,
+			expectedAnswer.QuestionID,
+			answer.QuestionID,
+		)
+		assert.Equal(
+			t,
+			questionId,
+			answer.User.ID,
+		)
+		assert.Equal(
+			t,
+			expectedAnswer.UserID,
+			answer.User.ID,
+		)
+	}
 
 	mockCall.Unset()
 }

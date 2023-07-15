@@ -10,6 +10,10 @@ import (
 type UserRepositoryImpl struct {
 }
 
+func NewUserRepository() *UserRepositoryImpl {
+	return &UserRepositoryImpl{}
+}
+
 func (repository *UserRepositoryImpl) Insert(ctx context.Context, DB *gorm.DB, user entity.User) (entity.User, error) {
 	result := DB.WithContext(ctx).Create(&user)
 	return user, result.Error

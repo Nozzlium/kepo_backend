@@ -14,6 +14,16 @@ type CategoryServiceImpl struct {
 	CategoryRepository repository.CategoryRepository
 }
 
+func NewCategoryService(
+	DB *gorm.DB,
+	categoryRepository repository.CategoryRepository,
+) *CategoryServiceImpl {
+	return &CategoryServiceImpl{
+		DB:                 DB,
+		CategoryRepository: categoryRepository,
+	}
+}
+
 func (service *CategoryServiceImpl) Get(ctx context.Context) ([]response.CategoryResponse, error) {
 	categories, err := service.CategoryRepository.FindAll(
 		ctx,
