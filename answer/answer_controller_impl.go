@@ -137,7 +137,7 @@ func (controller *AnswerControllerImpl) FindByUser(writer http.ResponseWriter, r
 	claims, err := tools.GetClaimsFromContext(request.Context())
 	helper.PanicIfError(err)
 
-	userIdString := params.ByName("userId")
+	userIdString := params.ByName("id")
 	userId, err := strconv.ParseUint(userIdString, 10, 32)
 	if err != nil {
 		panic(exception.BadRequestError{})
@@ -174,7 +174,7 @@ func (controller AnswerControllerImpl) FindByQuestion(writer http.ResponseWriter
 	claims, err := tools.GetClaimsFromContext(request.Context())
 	helper.PanicIfError(err)
 
-	questionIdString := params.ByName("questionId")
+	questionIdString := params.ByName("id")
 	questionId, err := strconv.ParseUint(questionIdString, 10, 32)
 	if err != nil {
 		panic(exception.BadRequestError{})

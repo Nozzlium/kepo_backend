@@ -295,7 +295,7 @@ func TestGetAnswerByUser(t *testing.T) {
 
 	var userId uint = 1
 	routerParam := httprouter.Param{
-		Key:   "userId",
+		Key:   "id",
 		Value: strconv.FormatUint(uint64(userId), 10),
 	}
 	answerController.FindByUser(recorder, request.WithContext(ctx), httprouter.Params{
@@ -357,7 +357,7 @@ func TestGetAnswersByUserUnauthorized(t *testing.T) {
 		func() {
 			answerController.FindByUser(recorder, request, httprouter.Params{
 				httprouter.Param{
-					Key:   "userId",
+					Key:   "id",
 					Value: "1",
 				},
 			})
@@ -376,7 +376,7 @@ func TestGetAnswerByUserInvalidUserId(t *testing.T) {
 		func() {
 			answerController.FindByUser(recorder, request.WithContext(ctx), httprouter.Params{
 				httprouter.Param{
-					Key:   "userId",
+					Key:   "id",
 					Value: "samsul",
 				},
 			})
@@ -396,7 +396,7 @@ func TestGetAnswerByUserServiceError(t *testing.T) {
 		func() {
 			answerController.FindByUser(recorder, request.WithContext(ctx), httprouter.Params{
 				httprouter.Param{
-					Key:   "userId",
+					Key:   "id",
 					Value: "1",
 				},
 			})
@@ -415,7 +415,7 @@ func TestGetAnswerByQuestion(t *testing.T) {
 
 	var questionId uint = 1
 	routerParam := httprouter.Param{
-		Key:   "questionId",
+		Key:   "id",
 		Value: strconv.FormatUint(uint64(questionId), 10),
 	}
 	answerController.FindByQuestion(recorder, request.WithContext(ctx), httprouter.Params{

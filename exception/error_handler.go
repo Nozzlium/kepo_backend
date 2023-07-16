@@ -10,13 +10,23 @@ import (
 func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interface{}) {
 	if badRequestError(writer, request, err) {
 		return
-	} else if invalidLoginError(writer, request, err) {
-		return
-	} else if notFoundError(writer, request, err) {
-		return
-	} else if unauthorizedError(writer, request, err) {
+	}
+	if invalidLoginError(writer, request, err) {
 		return
 	}
+	if notFoundError(writer, request, err) {
+		return
+	}
+	if unauthorizedError(writer, request, err) {
+		return
+	}
+
+	webResponse := response.WebResponse{
+		Code:   http.StatusInternalServerError,
+		Status: constants.BAD_REQUEST,
+	}
+	enc := json.NewEncoder(writer)
+	enc.Encode(&webResponse)
 
 }
 
@@ -63,7 +73,7 @@ func notFoundError(writer http.ResponseWriter, request *http.Request, err interf
 }
 
 func unauthorizedError(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
-	exception, ok := err.(NotFoundError)
+	exception, ok := err.(UnauthorizedError)
 	if ok {
 		webResponse := response.WebResponse{
 			Code:   http.StatusUnauthorized,

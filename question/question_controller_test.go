@@ -277,7 +277,7 @@ func TestGetQuestionsByUserSuccess(t *testing.T) {
 	var expectedId uint = 1
 	params := httprouter.Params{}
 	params = append(params, httprouter.Param{
-		Key:   "userId",
+		Key:   "id",
 		Value: strconv.Itoa(int(expectedId)),
 	})
 
@@ -310,7 +310,7 @@ func TestGetQuestionsByUserUnauthorized(t *testing.T) {
 
 	params := httprouter.Params{}
 	params = append(params, httprouter.Param{
-		Key:   "userId",
+		Key:   "id",
 		Value: "1",
 	})
 
@@ -336,7 +336,7 @@ func TestGetQuestionsByUserInvalidUserId(t *testing.T) {
 
 	params := httprouter.Params{}
 	params = append(params, httprouter.Param{
-		Key:   "userId",
+		Key:   "id",
 		Value: "samsul",
 	})
 

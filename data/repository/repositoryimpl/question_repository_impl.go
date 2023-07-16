@@ -2,6 +2,7 @@ package repositoryimpl
 
 import (
 	"context"
+	"fmt"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
 	"nozzlium/kepo_backend/data/repository/result"
@@ -43,6 +44,7 @@ func (repository *QuestionRepositoryImpl) FindOneBy(ctx context.Context, DB *gor
 
 func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *gorm.DB, param param.QuestionParam) ([]result.QuestionResult, error) {
 	res := []result.QuestionResult{}
+	fmt.Println(param)
 	find := DB.WithContext(ctx).
 		Table(`questions q 
 			join users u on u.id = q.user_id

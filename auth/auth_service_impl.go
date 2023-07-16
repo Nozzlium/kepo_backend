@@ -30,13 +30,17 @@ func NewAuthService(
 }
 
 func (service *AuthServiceImpl) Register(ctx context.Context, param param.AuthParam) (response.UserResponse, error) {
+	passHash, err := tools.HashPassword(param.Password)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
 	user, err := service.UserRepository.Insert(
 		ctx,
 		service.DB,
 		entity.User{
 			Email:    param.Email,
 			Username: param.Username,
-			Password: param.Password,
+			Password: passHash,
 		},
 	)
 	return helper.UserEntityToResponse(user), err

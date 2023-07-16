@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 	"nozzlium/kepo_backend/constants"
-	"nozzlium/kepo_backend/exception"
-	"nozzlium/kepo_backend/helper"
 	"nozzlium/kepo_backend/tools"
 	"strings"
 )
@@ -23,13 +21,12 @@ func NewAuthMiddleware(
 func (middleware *AuthMiddleware) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	auth := request.Header.Get("Authorization")
 	token := strings.Split(auth, " ")
-	if token[0] != "Bearer" {
-		helper.PanicIfError(exception.BadRequestError{})
-	}
-	claims, err := tools.ParseJWTToken(token[1])
 	ctx := request.Context()
-	if err == nil {
-		ctx = context.WithValue(request.Context(), constants.USER_ID_CLAIMS, claims)
+	if token[0] == "Bearer" {
+		claims, err := tools.ParseJWTToken(token[1])
+		if err == nil {
+			ctx = context.WithValue(ctx, constants.USER_ID_CLAIMS, *claims)
+		}
 	}
 	middleware.Handler.ServeHTTP(writer, request.WithContext(ctx))
 }

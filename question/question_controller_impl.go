@@ -2,7 +2,6 @@ package question
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/entity"
@@ -87,9 +86,6 @@ func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, reques
 		PageSize:  len(questions),
 		Questions: questions,
 	}
-
-	fmt.Println(questionsListResponse)
-
 	webResponse := response.QuestionsWebResponse{
 		BaseResponse: response.BaseResponse{
 			Code:   http.StatusOK,
@@ -136,7 +132,7 @@ func (controller *QuestionControllerImpl) GetByUser(writer http.ResponseWriter, 
 	claims, err := tools.GetClaimsFromContext(request.Context())
 	helper.PanicIfError(err)
 
-	userIdString := params.ByName("userId")
+	userIdString := params.ByName("id")
 	userId, err := strconv.ParseUint(userIdString, 10, 32)
 	if err != nil {
 		panic(exception.BadRequestError{})

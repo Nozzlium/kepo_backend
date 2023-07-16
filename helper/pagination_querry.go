@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"fmt"
 	"net/http"
 	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/param"
@@ -14,12 +15,13 @@ func GetPaginationParamFromQuerry(
 
 	queries := request.URL.Query()
 	pageNo, err := strconv.Atoi(queries.Get(constants.PAGE_NO))
-	if err != nil && pageNo > 0 {
+	fmt.Println(pageNo)
+	if err == nil && pageNo > 0 {
 		pagination.PageNo = pageNo
 	}
 
 	pageSize, err := strconv.Atoi(queries.Get(constants.PAGE_SIZE))
-	if err != nil {
+	if err == nil {
 		pagination.PageSize = pageSize
 	}
 

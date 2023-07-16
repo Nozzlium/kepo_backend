@@ -24,7 +24,6 @@ func NewCategoryController(
 }
 
 func (controller *CategoryControllerImpl) Get(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
 	_, err := tools.GetClaimsFromContext(request.Context())
 	helper.PanicIfError(err)
 

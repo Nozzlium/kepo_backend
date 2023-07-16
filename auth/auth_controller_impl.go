@@ -67,12 +67,13 @@ func (controller *AuthControllerImpl) Login(writer http.ResponseWriter, request 
 	err = controller.Validator.Struct(body)
 	helper.PanicIfError(err)
 
+	param := param.LoginParam{
+		Identity: body.Identity,
+		Password: body.Password,
+	}
 	resp, err := controller.AuthService.Login(
 		request.Context(),
-		param.LoginParam{
-			Identity: body.Identity,
-			Password: body.Password,
-		},
+		param,
 	)
 	helper.PanicIfError(err)
 
