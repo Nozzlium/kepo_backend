@@ -63,9 +63,7 @@ func (controller *AnswerControllerImpl) Create(writer http.ResponseWriter, reque
 		},
 		Data: res,
 	}
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResponse)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResponse)
 }
 
 func (controller *AnswerControllerImpl) Find(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -92,9 +90,7 @@ func (controller *AnswerControllerImpl) Find(writer http.ResponseWriter, request
 			Answers:  resp,
 		},
 	}
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResponse)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResponse)
 }
 
 func (controller *AnswerControllerImpl) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -127,9 +123,7 @@ func (controller *AnswerControllerImpl) FindById(writer http.ResponseWriter, req
 		},
 		Data: resp[0],
 	}
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResponse)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResponse)
 
 }
 
@@ -165,9 +159,7 @@ func (controller *AnswerControllerImpl) FindByUser(writer http.ResponseWriter, r
 			Answers:  resp,
 		},
 	}
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResponse)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResponse)
 }
 
 func (controller AnswerControllerImpl) FindByQuestion(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -202,7 +194,5 @@ func (controller AnswerControllerImpl) FindByQuestion(writer http.ResponseWriter
 			Answers:  resp,
 		},
 	}
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResponse)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResponse)
 }

@@ -61,6 +61,5 @@ func (controller *QuestionLikeControllerImpl) Like(writer http.ResponseWriter, r
 		},
 		Data: resp,
 	}
-	encoder := json.NewEncoder(writer)
-	encoder.Encode(&webResponse)
+	helper.WriteResponse(writer, &webResponse)
 }

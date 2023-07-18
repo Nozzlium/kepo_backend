@@ -1,10 +1,10 @@
 package exception
 
 import (
-	"encoding/json"
 	"net/http"
 	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/response"
+	"nozzlium/kepo_backend/helper"
 )
 
 func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interface{}) {
@@ -21,25 +21,22 @@ func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interfa
 		return
 	}
 
-	webResponse := response.WebResponse{
+	webResponse := response.BaseResponse{
 		Code:   http.StatusInternalServerError,
-		Status: constants.BAD_REQUEST,
+		Status: constants.INTERNAL_SERVER_ERROR,
 	}
-	enc := json.NewEncoder(writer)
-	enc.Encode(&webResponse)
+	helper.WriteResponse(writer, &webResponse)
 
 }
 
 func badRequestError(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
 	exception, ok := err.(BadRequestError)
 	if ok {
-		webResponse := response.WebResponse{
+		webResponse := response.BaseResponse{
 			Code:   http.StatusBadRequest,
-			Status: constants.BAD_REQUEST,
-			Data:   exception.Error(),
+			Status: exception.Error(),
 		}
-		enc := json.NewEncoder(writer)
-		enc.Encode(&webResponse)
+		helper.WriteResponse(writer, &webResponse)
 	}
 	return ok
 }
@@ -47,13 +44,11 @@ func badRequestError(writer http.ResponseWriter, request *http.Request, err inte
 func invalidLoginError(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
 	exception, ok := err.(InvalidLoginError)
 	if ok {
-		webResponse := response.WebResponse{
+		webResponse := response.BaseResponse{
 			Code:   http.StatusUnauthorized,
-			Status: constants.INVALID_CREDENTIAL,
-			Data:   exception.Error(),
+			Status: exception.Error(),
 		}
-		enc := json.NewEncoder(writer)
-		enc.Encode(&webResponse)
+		helper.WriteResponse(writer, &webResponse)
 	}
 	return ok
 }
@@ -61,13 +56,11 @@ func invalidLoginError(writer http.ResponseWriter, request *http.Request, err in
 func notFoundError(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
 	exception, ok := err.(NotFoundError)
 	if ok {
-		webResponse := response.WebResponse{
+		webResponse := response.BaseResponse{
 			Code:   http.StatusNotFound,
-			Status: constants.NOT_FOUND,
-			Data:   exception.Error(),
+			Status: exception.Error(),
 		}
-		enc := json.NewEncoder(writer)
-		enc.Encode(&webResponse)
+		helper.WriteResponse(writer, &webResponse)
 	}
 	return ok
 }
@@ -75,13 +68,11 @@ func notFoundError(writer http.ResponseWriter, request *http.Request, err interf
 func unauthorizedError(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
 	exception, ok := err.(UnauthorizedError)
 	if ok {
-		webResponse := response.WebResponse{
+		webResponse := response.BaseResponse{
 			Code:   http.StatusUnauthorized,
-			Status: constants.UNAUTHORIZED,
-			Data:   exception.Error(),
+			Status: exception.Error(),
 		}
-		enc := json.NewEncoder(writer)
-		enc.Encode(&webResponse)
+		helper.WriteResponse(writer, &webResponse)
 	}
 	return ok
 }

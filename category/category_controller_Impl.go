@@ -1,7 +1,6 @@
 package category
 
 import (
-	"encoding/json"
 	"net/http"
 	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/response"
@@ -37,7 +36,5 @@ func (controller *CategoryControllerImpl) Get(writer http.ResponseWriter, reques
 		},
 		Data: resp,
 	}
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResponse)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResponse)
 }

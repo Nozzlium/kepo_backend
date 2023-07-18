@@ -54,8 +54,7 @@ func (controller *AuthControllerImpl) Register(writer http.ResponseWriter, reque
 		},
 		Data: resp,
 	}
-	encoder := json.NewEncoder(writer)
-	encoder.Encode(&respBody)
+	helper.WriteResponse(writer, &respBody)
 }
 
 func (controller *AuthControllerImpl) Login(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -84,6 +83,5 @@ func (controller *AuthControllerImpl) Login(writer http.ResponseWriter, request 
 		},
 		Data: resp,
 	}
-	encoder := json.NewEncoder(writer)
-	encoder.Encode(&respBody)
+	helper.WriteResponse(writer, &respBody)
 }

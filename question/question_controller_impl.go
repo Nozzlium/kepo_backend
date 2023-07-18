@@ -64,9 +64,7 @@ func (controller *QuestionControllerImpl) Create(writer http.ResponseWriter, req
 		},
 		Data: question,
 	}
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResponse)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResponse)
 }
 
 func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -94,9 +92,7 @@ func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, reques
 		Data: questionsListResponse,
 	}
 
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResponse)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResponse)
 }
 
 func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -123,9 +119,7 @@ func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, re
 		},
 		Data: question,
 	}
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResponse)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResponse)
 }
 
 func (controller *QuestionControllerImpl) GetByUser(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -162,7 +156,5 @@ func (controller *QuestionControllerImpl) GetByUser(writer http.ResponseWriter, 
 		},
 		Data: questionsListResponse,
 	}
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResponse)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResponse)
 }

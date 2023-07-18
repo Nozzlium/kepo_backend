@@ -62,7 +62,5 @@ func (controller *AnswerLikeControllerImpl) Like(writer http.ResponseWriter, req
 		Data: resp,
 	}
 
-	encoder := json.NewEncoder(writer)
-	err = encoder.Encode(&webResp)
-	helper.PanicIfError(err)
+	helper.WriteResponse(writer, &webResp)
 }

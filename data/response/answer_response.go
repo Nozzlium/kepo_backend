@@ -11,9 +11,9 @@ type AnswerWebResponse struct {
 }
 
 type AnswersResponse struct {
-	Page     int `json:"page"`
-	PageSize int `json:"pageSize"`
-	Answers  []AnswerResponse
+	Page     int              `json:"page"`
+	PageSize int              `json:"pageSize"`
+	Answers  []AnswerResponse `json:"answers"`
 }
 
 type AnswerResponse struct {
