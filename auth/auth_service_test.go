@@ -5,7 +5,7 @@ import (
 	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
-	"nozzlium/kepo_backend/data/repository/repositorymock"
+	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/exception"
 	"testing"
 
@@ -16,7 +16,7 @@ import (
 
 var expectedHash = "$2a$10$A.fc97ZQ0O3MBQuaA4F5L.PATPV3tbOS.Fli.5nF79eVDTSVFt0xW"
 
-var userRepositoryMock = repositorymock.UserRepositoryMock{Mock: mock.Mock{}}
+var userRepositoryMock = repository.UserRepositoryMock{Mock: mock.Mock{}}
 var authService = AuthServiceImpl{
 	UserRepository: &userRepositoryMock,
 }

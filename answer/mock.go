@@ -2,16 +2,16 @@ package answer
 
 import (
 	"nozzlium/kepo_backend/data/entity"
-	"nozzlium/kepo_backend/data/repository/repositorymock"
-	"nozzlium/kepo_backend/data/repository/result"
+	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/data/requestbody"
+	"nozzlium/kepo_backend/data/result"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 )
 
-var answerRepositoryMock = repositorymock.AnswerRepositoryMock{Mock: &mock.Mock{}}
+var answerRepositoryMock = repository.AnswerRepositoryMock{Mock: &mock.Mock{}}
 var answerService = AnswerServiceImpl{
 	AnswerRepository: &answerRepositoryMock,
 }

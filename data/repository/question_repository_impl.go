@@ -1,10 +1,10 @@
-package repositoryimpl
+package repository
 
 import (
 	"context"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
-	"nozzlium/kepo_backend/data/repository/result"
+	"nozzlium/kepo_backend/data/result"
 
 	"gorm.io/gorm"
 )

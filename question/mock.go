@@ -2,15 +2,15 @@ package question
 
 import (
 	"nozzlium/kepo_backend/data/entity"
-	"nozzlium/kepo_backend/data/repository/repositorymock"
-	"nozzlium/kepo_backend/data/repository/result"
+	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/data/requestbody"
+	"nozzlium/kepo_backend/data/result"
 
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 )
 
-var questionRepositoryMock = repositorymock.QuestionRepositoryMock{Mock: &mock.Mock{}}
+var questionRepositoryMock = repository.QuestionRepositoryMock{Mock: &mock.Mock{}}
 
 var expectedQuestions = []result.QuestionResult{
 	{

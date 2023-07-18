@@ -1,8 +1,8 @@
 package helper
 
 import (
-	"nozzlium/kepo_backend/data/repository/result"
 	"nozzlium/kepo_backend/data/response"
+	"nozzlium/kepo_backend/data/result"
 )
 
 func QuestionResultToResponse(

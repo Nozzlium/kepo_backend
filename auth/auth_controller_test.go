@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/entity"
-	"nozzlium/kepo_backend/data/repository/repositorymock"
+	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/data/requestbody"
 	"nozzlium/kepo_backend/data/response"
 	"testing"
@@ -18,7 +18,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var userRepository = repositorymock.UserRepositoryMock{Mock: mock.Mock{}}
+var userRepository = repository.UserRepositoryMock{Mock: mock.Mock{}}
 var authService1 = AuthServiceImpl{UserRepository: &userRepository}
 var authController = AuthControllerImpl{
 	AuthService: &authService1,

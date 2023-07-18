@@ -5,7 +5,7 @@ import (
 	"nozzlium/kepo_backend/answerlike"
 	"nozzlium/kepo_backend/auth"
 	"nozzlium/kepo_backend/category"
-	"nozzlium/kepo_backend/data/repository/repositoryimpl"
+	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/question"
 	"nozzlium/kepo_backend/questionlike"
 
@@ -18,12 +18,12 @@ func NewRouter() *httprouter.Router {
 	db := NewTestDB()
 	validator := validator.New()
 
-	userRepository := repositoryimpl.NewUserRepository()
-	categoryRepository := repositoryimpl.NewCategoryRepository()
-	questionRepository := repositoryimpl.NewQuestionRepository()
-	questionLikeRepository := repositoryimpl.NewQuestionLikeRepository()
-	answerRepository := repositoryimpl.NewAnswerRepository()
-	answerLikeRepository := repositoryimpl.NewAnswerLikeRepository()
+	userRepository := repository.NewUserRepository()
+	categoryRepository := repository.NewCategoryRepository()
+	questionRepository := repository.NewQuestionRepository()
+	questionLikeRepository := repository.NewQuestionLikeRepository()
+	answerRepository := repository.NewAnswerRepository()
+	answerLikeRepository := repository.NewAnswerLikeRepository()
 
 	authService := auth.NewAuthService(userRepository, db)
 	categoryService := category.NewCategoryService(db, categoryRepository)

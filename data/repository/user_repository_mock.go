@@ -1,4 +1,4 @@
-package repositorymock
+package repository
 
 import (
 	"context"

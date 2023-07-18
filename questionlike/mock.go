@@ -2,16 +2,16 @@ package questionlike
 
 import (
 	"nozzlium/kepo_backend/data/entity"
-	"nozzlium/kepo_backend/data/repository/repositorymock"
-	"nozzlium/kepo_backend/data/repository/result"
+	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/data/requestbody"
+	"nozzlium/kepo_backend/data/result"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/mock"
 )
 
-var questionLikeRepositoryMock = repositorymock.QuestionLikeRepositoryMock{Mock: &mock.Mock{}}
-var questionRepositoryMock = repositorymock.QuestionRepositoryMock{Mock: &mock.Mock{}}
+var questionLikeRepositoryMock = repository.QuestionLikeRepositoryMock{Mock: &mock.Mock{}}
+var questionRepositoryMock = repository.QuestionRepositoryMock{Mock: &mock.Mock{}}
 var questionLikeService = QuestionLikeServiceImpl{
 	QuestionLikeRepository: &questionLikeRepositoryMock,
 	QuestionRepository:     &questionRepositoryMock,

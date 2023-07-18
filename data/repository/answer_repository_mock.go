@@ -1,10 +1,10 @@
-package repositorymock
+package repository
 
 import (
 	"context"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
-	"nozzlium/kepo_backend/data/repository/result"
+	"nozzlium/kepo_backend/data/result"
 
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"

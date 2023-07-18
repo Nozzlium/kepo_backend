@@ -2,12 +2,12 @@ package category
 
 import (
 	"nozzlium/kepo_backend/data/entity"
-	"nozzlium/kepo_backend/data/repository/repositorymock"
+	"nozzlium/kepo_backend/data/repository"
 
 	"github.com/stretchr/testify/mock"
 )
 
-var categoryRepository = repositorymock.CategoryRepositoryMock{Mock: &mock.Mock{}}
+var categoryRepository = repository.CategoryRepositoryMock{Mock: &mock.Mock{}}
 var categoryService = CategoryServiceImpl{
 	CategoryRepository: &categoryRepository,
 }

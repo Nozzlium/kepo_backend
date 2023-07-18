@@ -4,7 +4,7 @@ import (
 	"context"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
-	"nozzlium/kepo_backend/data/repository/result"
+	"nozzlium/kepo_backend/data/result"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
