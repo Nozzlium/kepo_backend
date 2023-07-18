@@ -2,7 +2,6 @@ package repositoryimpl
 
 import (
 	"context"
-	"fmt"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
 	"nozzlium/kepo_backend/data/repository/result"
@@ -44,7 +43,6 @@ func (repository *QuestionRepositoryImpl) FindOneBy(ctx context.Context, DB *gor
 
 func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *gorm.DB, param param.QuestionParam) ([]result.QuestionResult, error) {
 	res := []result.QuestionResult{}
-	fmt.Println(param)
 	find := DB.WithContext(ctx).
 		Table(`questions q 
 			join users u on u.id = q.user_id
@@ -98,19 +96,19 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 
 func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context, DB *gorm.DB, param param.QuestionParam) (result.QuestionResult, error) {
 	question := result.QuestionResult{}
-	find := DB.WithContext(ctx).
-		Table(`questions q 
-			join users u on u.id = q.user_id
-			join categories c on c.id = q.category_id
-			left join question_likes ql on q.id = ql.question_id
-			left join question_likes qll on qll.question_id = q.id and qll.user_id = ?
-			left join answers a on a.question_id  = q.id`,
+	find := DB.WithContext(ctx).Model(&entity.Question{}).
+		Table(`questions 
+			join users u on u.id = questions.user_id
+			join categories c on c.id = questions.category_id
+			left join question_likes ql on questions.id = ql.question_id
+			left join question_likes qll on qll.question_id = questions.id and qll.user_id = ?
+			left join answers a on a.question_id  = questions.id`,
 			param.UserID,
 		).
 		Select(
-			`q.id,
-			q.content,
-			q.description,
+			`questions.id,
+			questions.content,
+			questions.description,
 			u.id as user_id,
 			u.username as username,
 			c.id as category_id,
@@ -122,14 +120,14 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 		)
 	if param.Question.ID != 0 {
 		find = find.Where(
-			"q.id = ?", param.Question.ID,
+			"questions.id = ?", param.Question.ID,
 		)
 	}
 	if param.Question.UserID != 0 {
 		find = find.Where(
-			"q.user_id = ?", param.Question.UserID,
+			"questions.user_id = ?", param.Question.UserID,
 		)
 	}
-	find = find.First(&question)
+	find = find.Group("questions.id").First(&question)
 	return question, find.Error
 }

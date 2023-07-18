@@ -27,6 +27,9 @@ func (repository *AnswerLikeRepositoryImpl) FindBy(ctx context.Context, DB *gorm
 }
 
 func (repository *AnswerLikeRepositoryImpl) Delete(ctx context.Context, DB *gorm.DB, answerLike entity.AnswerLike) (entity.AnswerLike, error) {
-	delete := DB.WithContext(ctx).Delete(answerLike)
+	delete := DB.WithContext(ctx).Where(
+		"answer_id = ? and user_id = ?",
+		answerLike.AnswerID, answerLike.UserID,
+	).Delete(answerLike)
 	return answerLike, delete.Error
 }

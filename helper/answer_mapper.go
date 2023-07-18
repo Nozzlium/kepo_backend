@@ -33,7 +33,7 @@ func AnswerResultToResponse(
 			Username: result.Username,
 		},
 		Likes:   result.Likes,
-		IsLiked: result.IsLiked != 1,
+		IsLiked: result.IsLiked != 0,
 	}
 }
 

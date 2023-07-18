@@ -1,6 +1,6 @@
 package requestbody
 
 type QuestionLike struct {
-	QuestionID uint
-	IsLike     bool
+	QuestionID uint `json:"questionId" validate:"required"`
+	IsLike     bool `json:"isLike"`
 }

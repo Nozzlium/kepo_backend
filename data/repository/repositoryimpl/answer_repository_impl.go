@@ -45,7 +45,7 @@ func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *go
 		Table(
 			`answers as a
 			join users as u on u.id = a.user_id 
-			left join answer_likes al on al.answer_id = a.id,
+			left join answer_likes al on al.answer_id = a.id
 			left join answer_likes al1 on al1.answer_id = a.id and al1.user_id = ?`,
 			param.UserID,
 		).
@@ -53,7 +53,7 @@ func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *go
 			`a.id,
 			a.content,
 			a.question_id,
-			u.Uid as user_id,
+			u.id as user_id,
 			u.username as username,
 			count(al.answer_id) as likes,
 			al1.answer_id as user_liked`,
@@ -64,7 +64,7 @@ func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *go
 	if param.Answer.UserID != 0 {
 		find = find.Where("a.user_id = ?", param.Answer.UserID)
 	}
-	find = find.
+	find = find.Group("a.id").
 		Limit(param.PageSize).
 		Offset((param.PageNo - 1) * param.PageSize).
 		Find(&answers)

@@ -33,6 +33,10 @@ func (repository *QuestionLikeRepositoryImpl) FindOneBy(ctx context.Context, DB 
 }
 
 func (repository *QuestionLikeRepositoryImpl) Delete(ctx context.Context, DB *gorm.DB, param param.QuestionLikeParam) (entity.QuestionLike, error) {
-	delete := DB.WithContext(ctx).Delete(param.QuestionLike)
+	delete := DB.WithContext(ctx).
+		Where("question_id = ? and user_id = ?",
+			param.QuestionLike.QuestionID,
+			param.QuestionLike.UserID,
+		).Delete(&param.QuestionLike)
 	return param.QuestionLike, delete.Error
 }
