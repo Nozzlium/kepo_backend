@@ -9,6 +9,7 @@ import (
 	"nozzlium/kepo_backend/data/response"
 	"nozzlium/kepo_backend/exception"
 	"nozzlium/kepo_backend/helper"
+	"nozzlium/kepo_backend/mysqlerr"
 	"nozzlium/kepo_backend/tools"
 
 	"gorm.io/gorm"
@@ -43,6 +44,10 @@ func (service *AuthServiceImpl) Register(ctx context.Context, param param.AuthPa
 			Password: passHash,
 		},
 	)
+	err = mysqlerr.CheckMySQLError(err)
+	if errors.Is(err, mysqlerr.DuplicateKeyError{}) {
+		return response.UserResponse{}, exception.UserExistsError{}
+	}
 	return helper.UserEntityToResponse(user), err
 }
 

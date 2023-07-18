@@ -20,6 +20,9 @@ func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interfa
 	if unauthorizedError(writer, request, err) {
 		return
 	}
+	if userExistsError(writer, request, err) {
+		return
+	}
 
 	webResponse := response.BaseResponse{
 		Code:   http.StatusInternalServerError,
@@ -27,6 +30,18 @@ func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interfa
 	}
 	helper.WriteResponse(writer, &webResponse)
 
+}
+
+func userExistsError(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
+	exception, ok := err.(UserExistsError)
+	if ok {
+		webResponse := response.BaseResponse{
+			Code:   http.StatusConflict,
+			Status: exception.Error(),
+		}
+		helper.WriteResponse(writer, &webResponse)
+	}
+	return ok
 }
 
 func badRequestError(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
