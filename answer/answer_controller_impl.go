@@ -67,13 +67,15 @@ func (controller *AnswerControllerImpl) Create(writer http.ResponseWriter, reque
 }
 
 func (controller *AnswerControllerImpl) Find(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-
+	var userID uint = 0
 	claims, err := tools.GetClaimsFromContext(request.Context())
-	helper.PanicIfError(err)
+	if err == nil {
+		userID = claims.UserId
+	}
 
 	answerParams := param.AnswerParam{
 		PaginationParam: helper.GetPaginationParamFromQuerry(request),
-		UserID:          claims.UserId,
+		UserID:          userID,
 	}
 
 	resp, err := controller.AnswerService.FindBy(request.Context(), answerParams)
@@ -94,8 +96,11 @@ func (controller *AnswerControllerImpl) Find(writer http.ResponseWriter, request
 }
 
 func (controller *AnswerControllerImpl) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	var userID uint = 0
 	claims, err := tools.GetClaimsFromContext(request.Context())
-	helper.PanicIfError(err)
+	if err == nil {
+		userID = claims.UserId
+	}
 
 	idString := params.ByName("id")
 	id, err := strconv.ParseUint(idString, 10, 32)
@@ -103,7 +108,7 @@ func (controller *AnswerControllerImpl) FindById(writer http.ResponseWriter, req
 
 	answerParams := param.AnswerParam{
 		PaginationParam: helper.GetPaginationParamFromQuerry(request),
-		UserID:          claims.UserId,
+		UserID:          userID,
 		Answer: entity.Answer{
 			ID: uint(id),
 		},
@@ -128,20 +133,23 @@ func (controller *AnswerControllerImpl) FindById(writer http.ResponseWriter, req
 }
 
 func (controller *AnswerControllerImpl) FindByUser(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	var userID uint = 0
 	claims, err := tools.GetClaimsFromContext(request.Context())
-	helper.PanicIfError(err)
+	if err == nil {
+		userID = claims.UserId
+	}
 
-	userIdString := params.ByName("id")
-	userId, err := strconv.ParseUint(userIdString, 10, 32)
+	questionUserIdString := params.ByName("id")
+	questionUserId, err := strconv.ParseUint(questionUserIdString, 10, 32)
 	if err != nil {
 		panic(exception.BadRequestError{})
 	}
 
 	answerParams := param.AnswerParam{
 		PaginationParam: helper.GetPaginationParamFromQuerry(request),
-		UserID:          claims.UserId,
+		UserID:          userID,
 		Answer: entity.Answer{
-			UserID: uint(userId),
+			UserID: uint(questionUserId),
 		},
 	}
 
@@ -163,8 +171,11 @@ func (controller *AnswerControllerImpl) FindByUser(writer http.ResponseWriter, r
 }
 
 func (controller AnswerControllerImpl) FindByQuestion(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	var userID uint = 0
 	claims, err := tools.GetClaimsFromContext(request.Context())
-	helper.PanicIfError(err)
+	if err == nil {
+		userID = claims.UserId
+	}
 
 	questionIdString := params.ByName("id")
 	questionId, err := strconv.ParseUint(questionIdString, 10, 32)
@@ -174,7 +185,7 @@ func (controller AnswerControllerImpl) FindByQuestion(writer http.ResponseWriter
 
 	answerParams := param.AnswerParam{
 		PaginationParam: helper.GetPaginationParamFromQuerry(request),
-		UserID:          claims.UserId,
+		UserID:          userID,
 		Answer: entity.Answer{
 			QuestionID: uint(questionId),
 		},
