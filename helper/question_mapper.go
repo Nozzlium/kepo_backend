@@ -22,7 +22,7 @@ func QuestionResultToResponse(
 		Description: result.Description,
 		Likes:       result.Likes,
 		Answers:     result.Answers,
-		IsLiked:     result.UserLiked == 1,
+		IsLiked:     result.UserLiked != 0,
 	}
 }
 

@@ -68,13 +68,16 @@ func (controller *QuestionControllerImpl) Create(writer http.ResponseWriter, req
 }
 
 func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	var userID uint = 0
 	claims, err := tools.GetClaimsFromContext(request.Context())
-	helper.PanicIfError(err)
+	if err == nil {
+		userID = claims.UserId
+	}
 
 	questionParam := param.InitQuestionParam()
 
 	questionParam.PaginationParam = helper.GetPaginationParamFromQuerry(request)
-	questionParam.UserID = claims.UserId
+	questionParam.UserID = userID
 
 	questions, err := controller.QuestionService.FindAll(request.Context(), questionParam)
 	helper.PanicIfError(err)
@@ -96,11 +99,14 @@ func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, reques
 }
 
 func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	var userID uint = 0
 	claims, err := tools.GetClaimsFromContext(request.Context())
-	helper.PanicIfError(err)
+	if err == nil {
+		userID = claims.UserId
+	}
 
 	questionParam := param.InitQuestionParam()
-	questionParam.UserID = claims.UserId
+	questionParam.UserID = userID
 
 	idString := params.ByName("id")
 	id, err := strconv.ParseUint(idString, 10, 32)
@@ -123,19 +129,22 @@ func (controller *QuestionControllerImpl) GetById(writer http.ResponseWriter, re
 }
 
 func (controller *QuestionControllerImpl) GetByUser(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	var userID uint = 0
 	claims, err := tools.GetClaimsFromContext(request.Context())
-	helper.PanicIfError(err)
+	if err == nil {
+		userID = claims.UserId
+	}
 
-	userIdString := params.ByName("id")
-	userId, err := strconv.ParseUint(userIdString, 10, 32)
+	questionUserIDString := params.ByName("id")
+	questionUserID, err := strconv.ParseUint(questionUserIDString, 10, 32)
 	if err != nil {
 		panic(exception.BadRequestError{})
 	}
 
 	questionParam := param.InitQuestionParam()
 	questionParam.PaginationParam = helper.GetPaginationParamFromQuerry(request)
-	questionParam.UserID = claims.UserId
-	questionParam.Question.UserID = uint(userId)
+	questionParam.UserID = userID
+	questionParam.Question.UserID = uint(questionUserID)
 
 	questions, err := controller.QuestionService.FindAll(
 		request.Context(),
