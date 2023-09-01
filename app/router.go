@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+	"net/http"
 	"nozzlium/kepo_backend/answer"
 	"nozzlium/kepo_backend/answerlike"
 	"nozzlium/kepo_backend/auth"
@@ -48,6 +50,19 @@ func NewRouter() *httprouter.Router {
 	)
 
 	router := httprouter.New()
+
+	router.GlobalOPTIONS = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.Header.Get("Access-Control-Request-Method"))
+		if r.Header.Get("Access-Control-Request-Method") != "" {
+			// Set CORS headers
+			header := w.Header()
+			header.Set("Access-Control-Allow-Methods", header.Get("Allow"))
+			header.Set("Access-Control-Allow-Origin", "*")
+		}
+
+		// Adjust status code to 204
+		w.WriteHeader(http.StatusNoContent)
+	})
 
 	router.POST("/api/register", authController.Register)
 	router.POST("/api/login", authController.Login)
