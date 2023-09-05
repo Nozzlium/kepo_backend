@@ -96,7 +96,7 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 
 func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context, DB *gorm.DB, param param.QuestionParam) (result.QuestionResult, error) {
 	question := result.QuestionResult{}
-	find := DB.WithContext(ctx).Model(&entity.Question{}).
+	find := DB.WithContext(ctx).Debug().Model(&entity.Question{}).
 		Table(`questions 
 			join users u on u.id = questions.user_id
 			join categories c on c.id = questions.category_id
