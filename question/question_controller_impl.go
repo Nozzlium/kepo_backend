@@ -79,6 +79,12 @@ func (controller *QuestionControllerImpl) Get(writer http.ResponseWriter, reques
 	questionParam.PaginationParam = helper.GetPaginationParamFromQuerry(request)
 	questionParam.UserID = userID
 
+	queries := request.URL.Query()
+	categoryID, err := strconv.ParseUint(queries.Get(constants.CATEGORY), 10, 32)
+	if err == nil {
+		questionParam.Question.CategoryID = uint(categoryID)
+	}
+
 	questions, err := controller.QuestionService.FindAll(request.Context(), questionParam)
 	helper.PanicIfError(err)
 
