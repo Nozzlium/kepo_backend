@@ -43,7 +43,7 @@ func (repository *QuestionRepositoryImpl) FindOneBy(ctx context.Context, DB *gor
 
 func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *gorm.DB, param param.QuestionParam) ([]result.QuestionResult, error) {
 	res := []result.QuestionResult{}
-	find := DB.WithContext(ctx).
+	find := DB.WithContext(ctx).Debug().
 		Table(`questions q 
 			join users u on u.id = q.user_id
 			join categories c on c.id = q.category_id
@@ -60,7 +60,7 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 			u.username as username,
 			c.id as category_id,
 			c.name as category_name,
-			count(ql.question_id) as likes,
+			count(distinct ql.question_id) as likes,
 			COUNT(a.id) as answers,
 			qll.question_id as user_liked
 			`,
@@ -113,7 +113,7 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 			u.username as username,
 			c.id as category_id,
 			c.name as category_name,
-			count(ql.question_id) as likes,
+			count(distinct ql.question_id) as likes,
 			COUNT(a.id) as answers,
 			qll.question_id as user_liked
 			`,
