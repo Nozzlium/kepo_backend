@@ -1,14 +1,16 @@
 package entity
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 type Answer struct {
-	ID          uint
-	QuestionID  uint
-	UserID      uint
-	Content     string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   time.Time
-	AnswerLikes []AnswerLike
+	ID         uint
+	QuestionID uint
+	UserID     uint
+	Content    string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  sql.NullTime
 }
