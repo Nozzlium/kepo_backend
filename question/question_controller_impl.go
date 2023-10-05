@@ -173,3 +173,42 @@ func (controller *QuestionControllerImpl) GetByUser(writer http.ResponseWriter, 
 	}
 	helper.WriteResponse(writer, &webResponse)
 }
+
+func (controller *QuestionControllerImpl) GetLikedByUser(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	var userID uint = 0
+	claims, err := tools.GetClaimsFromContext(request.Context())
+	if err == nil {
+		userID = claims.UserId
+	}
+
+	questionParam := param.InitLikedQuestionParam()
+	questionParam.UserID = userID
+
+	questionParam.PaginationParam = helper.GetPaginationParamFromQuerry(request)
+	questionParam.UserID = userID
+
+	idString := params.ByName("id")
+	id, err := strconv.ParseUint(idString, 10, 32)
+	if err != nil {
+		panic(exception.BadRequestError{})
+	}
+	questionParam.LikerID = uint(id)
+
+	questions, err := controller.QuestionService.FindLikedByUser(request.Context(), questionParam)
+	helper.PanicIfError(err)
+
+	questionsListResponse := response.QuestionsResponse{
+		Page:      questionParam.PageNo,
+		PageSize:  len(questions),
+		Questions: questions,
+	}
+
+	webResponse := response.QuestionsWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: questionsListResponse,
+	}
+	helper.WriteResponse(writer, &webResponse)
+}

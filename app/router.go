@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"net/http"
 	"nozzlium/kepo_backend/answer"
 	"nozzlium/kepo_backend/answerlike"
@@ -55,7 +54,6 @@ func NewRouter() *httprouter.Router {
 	router := httprouter.New()
 
 	router.GlobalOPTIONS = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(r.Header.Get("Access-Control-Request-Method"))
 		if r.Header.Get("Access-Control-Request-Method") != "" {
 			// Set CORS headers
 			header := w.Header()
@@ -77,6 +75,7 @@ func NewRouter() *httprouter.Router {
 	router.GET("/api/question", questionController.Get)
 	router.GET("/api/question/:id", questionController.GetById)
 	router.GET("/api/user/:id/question", questionController.GetByUser)
+	router.GET("/api/user/:id/question/like", questionController.GetLikedByUser)
 
 	router.POST("/api/answer", answerController.Create)
 	router.GET("/api/answer", answerController.Find)

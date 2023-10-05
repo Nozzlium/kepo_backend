@@ -57,3 +57,7 @@ func (repository *QuestionRepositoryMock) FindOneDetailedBy(ctx context.Context,
 	}
 	return args0.(result.QuestionResult), args1.(error)
 }
+
+func (repository *QuestionRepositoryMock) FindDetailedLikedByUser(ctx context.Context, DB *gorm.DB, param param.LikedQuestionParam) ([]result.QuestionResult, error) {
+	return []result.QuestionResult{}, nil
+}

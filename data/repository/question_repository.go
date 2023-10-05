@@ -15,4 +15,5 @@ type QuestionRepository interface {
 	FindOneBy(ctx context.Context, DB *gorm.DB, param param.QuestionParam) (entity.Question, error)
 	FindDetailed(ctx context.Context, DB *gorm.DB, param param.QuestionParam) ([]result.QuestionResult, error)
 	FindOneDetailedBy(ctx context.Context, DB *gorm.DB, param param.QuestionParam) (result.QuestionResult, error)
+	FindDetailedLikedByUser(ctx context.Context, DB *gorm.DB, param param.LikedQuestionParam) ([]result.QuestionResult, error)
 }

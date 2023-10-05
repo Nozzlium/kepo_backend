@@ -23,12 +23,12 @@ var questionLikeController QuestionLikeController = &QuestionLikeControllerImpl{
 
 var likeRequestBody = requestbody.QuestionLike{
 	QuestionID: 1,
-	IsLike:     true,
+	IsLiked:    true,
 }
 
 var dislikeRequestBody = requestbody.QuestionLike{
 	QuestionID: 2,
-	IsLike:     false,
+	IsLiked:    false,
 }
 
 func mockLikeQuestion() *mock.Call {
