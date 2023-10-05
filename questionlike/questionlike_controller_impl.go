@@ -49,12 +49,12 @@ func (controller *QuestionLikeControllerImpl) Like(writer http.ResponseWriter, r
 				QuestionID: body.QuestionID,
 				UserID:     claims.UserId,
 			},
-			IsLiked: body.IsLike,
+			IsLiked: body.IsLiked,
 		},
 	)
 	helper.PanicIfError(err)
 
-	webResponse := response.QuestionLikeWebResponse{
+	webResponse := response.QuestionWebResponse{
 		BaseResponse: response.BaseResponse{
 			Code:   http.StatusOK,
 			Status: constants.STATUS_OK,

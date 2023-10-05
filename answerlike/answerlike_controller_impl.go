@@ -54,7 +54,7 @@ func (controller *AnswerLikeControllerImpl) Like(writer http.ResponseWriter, req
 	)
 	helper.PanicIfError(err)
 
-	webResp := response.AnswerLikeWebResponse{
+	webResp := response.AnswerWebResponse{
 		BaseResponse: response.BaseResponse{
 			Code:   http.StatusOK,
 			Status: constants.STATUS_OK,

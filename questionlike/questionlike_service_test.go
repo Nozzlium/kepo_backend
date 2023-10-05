@@ -27,7 +27,7 @@ func TestAddUserLike(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, true, response.IsLiked)
-	assert.Equal(t, uint(1), response.QuestionID)
+	assert.Equal(t, uint(1), response.ID)
 }
 
 func TestAssignDislike(t *testing.T) {
@@ -47,5 +47,5 @@ func TestAssignDislike(t *testing.T) {
 	mockCallDislikedQuestion.Unset()
 
 	assert.Nil(t, err)
-	assert.Equal(t, uint(2), response.QuestionID)
+	assert.Equal(t, uint(2), response.ID)
 }

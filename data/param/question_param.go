@@ -8,8 +8,21 @@ type QuestionParam struct {
 	Question entity.Question
 }
 
+type LikedQuestionParam struct {
+	PaginationParam
+	UserID   uint
+	LikerID  uint
+	Question entity.Question
+}
+
 func InitQuestionParam() QuestionParam {
 	return QuestionParam{
+		PaginationParam: InitPaginationParam(),
+	}
+}
+
+func InitLikedQuestionParam() LikedQuestionParam {
+	return LikedQuestionParam{
 		PaginationParam: InitPaginationParam(),
 	}
 }

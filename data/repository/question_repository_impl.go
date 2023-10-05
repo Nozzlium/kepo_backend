@@ -60,7 +60,7 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 			u.username as username,
 			c.id as category_id,
 			c.name as category_name,
-			count(ql.question_id) as likes,
+			count(distinct ql.question_id) as likes,
 			COUNT(a.id) as answers,
 			qll.question_id as user_liked
 			`,
@@ -96,7 +96,7 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 
 func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context, DB *gorm.DB, param param.QuestionParam) (result.QuestionResult, error) {
 	question := result.QuestionResult{}
-	find := DB.WithContext(ctx).Debug().Model(&entity.Question{}).
+	find := DB.WithContext(ctx).Model(&entity.Question{}).
 		Table(`questions 
 			join users u on u.id = questions.user_id
 			join categories c on c.id = questions.category_id
@@ -113,7 +113,7 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 			u.username as username,
 			c.id as category_id,
 			c.name as category_name,
-			count(ql.question_id) as likes,
+			count(distinct ql.question_id) as likes,
 			COUNT(a.id) as answers,
 			qll.question_id as user_liked
 			`,
@@ -130,4 +130,33 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 	}
 	find = find.Group("questions.id").First(&question)
 	return question, find.Error
+}
+
+func (repository *QuestionRepositoryImpl) FindDetailedLikedByUser(ctx context.Context, DB *gorm.DB, param param.LikedQuestionParam) ([]result.QuestionResult, error) {
+	questions := []result.QuestionResult{}
+	find := DB.WithContext(ctx).Model(&result.QuestionResult{}).
+		Table(`question_likes ql 
+				join questions q on ql.question_id = q.id 
+				join users u ON u.id = q.user_id 
+				join categories c ON c.id = q.category_id 
+				left join question_likes ql2 on ql2.question_id = q.id
+				left JOIN question_likes ql3 on ql3.question_id = q.id and ql3.user_id = ?
+				left join answers a on q.id = a.question_id `,
+			param.UserID).
+		Select(`q.id ,
+				u.id as user_id ,
+				u.username ,
+				c.id as category_id,
+				c.name as category_name,
+				q.content ,
+				q.description,
+				COUNT(DISTINCT ql2.question_id) as likes,
+				count(DISTINCT a.id) as answers,
+				ql3.question_id as user_liked
+			`)
+	find = find.Where("u.id = ?", param.LikerID).Group("q.id").
+		Limit(param.PageSize).
+		Offset((param.PageNo - 1) * param.PageSize).
+		Find(&questions)
+	return questions, find.Error
 }

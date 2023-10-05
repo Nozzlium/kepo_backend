@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"net/http"
 	"nozzlium/kepo_backend/answer"
 	"nozzlium/kepo_backend/answerlike"
@@ -10,6 +9,7 @@ import (
 	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/question"
 	"nozzlium/kepo_backend/questionlike"
+	"nozzlium/kepo_backend/user"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/julienschmidt/httprouter"
@@ -37,6 +37,8 @@ func NewRouter() *httprouter.Router {
 	answerLikeService := answerlike.NewAnswerLikeService(
 		answerLikeRepository, answerRepository, db,
 	)
+	userService := user.NewUserService(userRepository, db)
+	userController := user.NewUserController(userService)
 
 	authController := auth.NewAuthController(authService, validator)
 	categoryController := category.NewCategoryController(categoryService)
@@ -52,7 +54,6 @@ func NewRouter() *httprouter.Router {
 	router := httprouter.New()
 
 	router.GlobalOPTIONS = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(r.Header.Get("Access-Control-Request-Method"))
 		if r.Header.Get("Access-Control-Request-Method") != "" {
 			// Set CORS headers
 			header := w.Header()
@@ -67,10 +68,14 @@ func NewRouter() *httprouter.Router {
 	router.POST("/api/register", authController.Register)
 	router.POST("/api/login", authController.Login)
 
+	router.GET("/api/details", userController.GetDetails)
+	router.GET("/api/user/:id/details", userController.GetById)
+
 	router.POST("/api/question", questionController.Create)
 	router.GET("/api/question", questionController.Get)
 	router.GET("/api/question/:id", questionController.GetById)
 	router.GET("/api/user/:id/question", questionController.GetByUser)
+	router.GET("/api/user/:id/question/like", questionController.GetLikedByUser)
 
 	router.POST("/api/answer", answerController.Create)
 	router.GET("/api/answer", answerController.Find)
@@ -82,6 +87,17 @@ func NewRouter() *httprouter.Router {
 	router.POST("/api/question/like", questionLikeController.Like)
 
 	router.GET("/api/category", categoryController.Get)
+
+	router.GlobalOPTIONS = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Access-Control-Request-Method") != "" {
+			header := w.Header()
+			header.Set("Access-Control-Allow-Methods", header.Get("Allow"))
+			header.Set("Access-Control-Allow-Origin", "*")
+			header.Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	})
 
 	return router
 

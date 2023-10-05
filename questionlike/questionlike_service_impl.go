@@ -6,7 +6,7 @@ import (
 	"nozzlium/kepo_backend/data/param"
 	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/data/response"
-	"nozzlium/kepo_backend/exception"
+	"nozzlium/kepo_backend/helper"
 
 	"gorm.io/gorm"
 )
@@ -29,9 +29,9 @@ func NewQuestionLikeService(
 	}
 }
 
-func (service *QuestionLikeServiceImpl) AssignLike(ctx context.Context, params param.QuestionLikeParam) (response.QuestionLikeResponse, error) {
+func (service *QuestionLikeServiceImpl) AssignLike(ctx context.Context, params param.QuestionLikeParam) (response.QuestionResponse, error) {
 	var err error
-	var resp response.QuestionLikeResponse
+	var resp response.QuestionResponse
 	if params.IsLiked {
 		_, err = service.QuestionLikeRepository.Insert(
 			ctx,
@@ -49,7 +49,7 @@ func (service *QuestionLikeServiceImpl) AssignLike(ctx context.Context, params p
 		return resp, err
 	}
 
-	res, err := service.QuestionRepository.FindDetailed(
+	res, err := service.QuestionRepository.FindOneDetailedBy(
 		ctx,
 		service.DB,
 		param.QuestionParam{
@@ -59,14 +59,5 @@ func (service *QuestionLikeServiceImpl) AssignLike(ctx context.Context, params p
 			},
 		},
 	)
-	if len(res) < 1 {
-		return resp, exception.NotFoundError{}
-	}
-	likedQuestion := res[0]
-	resp = response.QuestionLikeResponse{
-		QuestionID: likedQuestion.ID,
-		Likes:      likedQuestion.Likes,
-		IsLiked:    likedQuestion.UserLiked != 0,
-	}
-	return resp, err
+	return helper.QuestionResultToResponse(res), err
 }

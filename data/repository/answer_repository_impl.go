@@ -55,7 +55,7 @@ func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *go
 			a.question_id,
 			u.id as user_id,
 			u.username as username,
-			count(al.answer_id) as likes,
+			count(distinct al.answer_id) as likes,
 			al1.answer_id as user_liked`,
 		)
 	if param.Answer.QuestionID != 0 {
@@ -87,7 +87,7 @@ func (repository *AnswerRepositoryImpl) FindOneDetailed(ctx context.Context, DB 
 			answers.question_id,
 			u.id as user_id,
 			u.username as username,
-			count(al.answer_id) as likes,
+			count(distinct al.answer_id) as likes,
 			al1.answer_id as user_liked`,
 		)
 	if param.Answer.ID != 0 {

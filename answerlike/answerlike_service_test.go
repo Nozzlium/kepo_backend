@@ -30,7 +30,7 @@ func TestAssignLike(t *testing.T) {
 	assert.Nil(t, err)
 	assert.IsType(t, response.AnswerLikeResponse{}, answer)
 	assert.Equal(t, true, answer.IsLiked)
-	assert.Equal(t, uint(1), answer.AnswerID)
+	assert.Equal(t, uint(1), answer.ID)
 }
 
 func TestAssignDislike(t *testing.T) {
@@ -52,7 +52,7 @@ func TestAssignDislike(t *testing.T) {
 	assert.Nil(t, err)
 	assert.IsType(t, response.AnswerLikeResponse{}, answer)
 	assert.Equal(t, false, answer.IsLiked)
-	assert.Equal(t, uint(1), answer.AnswerID)
+	assert.Equal(t, uint(1), answer.ID)
 }
 
 func TestLikeServiceError(t *testing.T) {

@@ -64,3 +64,12 @@ func (service *QuestionServiceImpl) FindOneBy(ctx context.Context, param param.Q
 	)
 	return helper.QuestionResultToResponse(question), err
 }
+
+func (service *QuestionServiceImpl) FindLikedByUser(ctx context.Context, param param.LikedQuestionParam) ([]response.QuestionResponse, error) {
+	questions, err := service.QuestionRepository.FindDetailedLikedByUser(
+		ctx,
+		service.DB,
+		param,
+	)
+	return helper.QuestionResultsToResponses(questions), err
+}

@@ -7,5 +7,5 @@ import (
 )
 
 type QuestionLikeService interface {
-	AssignLike(ctx context.Context, param param.QuestionLikeParam) (response.QuestionLikeResponse, error)
+	AssignLike(ctx context.Context, param param.QuestionLikeParam) (response.QuestionResponse, error)
 }

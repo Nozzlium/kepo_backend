@@ -1,7 +1,7 @@
 package response
 
 type AuthResponse struct {
-	Token string
+	Token string `json:"token"`
 }
 
 type AuthWebResponse struct {
