@@ -43,19 +43,19 @@ func (repository *QuestionRepositoryImpl) FindOneBy(ctx context.Context, DB *gor
 
 func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *gorm.DB, param param.QuestionParam) ([]result.QuestionResult, error) {
 	res := []result.QuestionResult{}
-	find := DB.WithContext(ctx).
-		Table(`questions q 
-			join users u on u.id = q.user_id
-			join categories c on c.id = q.category_id
-			left join question_likes ql on q.id = ql.question_id
-			left join question_likes qll on qll.question_id = q.id and qll.user_id = ?
-			left join answers a on a.question_id  = q.id`,
+	find := DB.Debug().WithContext(ctx).Model(&entity.Question{}).
+		Table(`questions 
+			join users u on u.id = questions.user_id
+			join categories c on c.id = questions.category_id
+			left join question_likes ql on questions.id = ql.question_id
+			left join question_likes qll on qll.question_id = questions.id and qll.user_id = ?
+			left join answers a on a.question_id  = questions.id`,
 			param.UserID,
 		).
 		Select(
-			`q.id,
-			q.content,
-			q.description,
+			`questions.id,
+			questions.content,
+			questions.description,
 			u.id as user_id,
 			u.username as username,
 			c.id as category_id,
@@ -67,7 +67,7 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 		)
 	if param.Keyword != "" {
 		find = find.Where(
-			`MATCH(q.content, q.description)
+			`MATCH(questions.content, questions.description)
 				AGAINST(? IN NATURAL LANGUAGE MODE)
 			`,
 			param.Keyword,
@@ -75,22 +75,23 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 	}
 	if param.Question.UserID != 0 {
 		find = find.Where(
-			"q.user_id = ?", param.Question.UserID,
+			"questions.user_id = ?", param.Question.UserID,
 		)
 	}
 	if param.Question.ID != 0 {
 		find = find.Where(
-			"q.id = ?", param.Question.ID,
+			"questions.id = ?", param.Question.ID,
 		)
 	}
 	if param.Question.CategoryID != 0 {
 		find = find.Where(
-			"q.category_id", param.Question.CategoryID,
+			"questions.category_id", param.Question.CategoryID,
 		)
 	}
-	find = find.Group("q.id").
+	find = find.Group("questions.id").
 		Limit(param.PageSize).
-		Offset((param.PageNo - 1) * param.PageSize).Find(&res)
+		Offset((param.PageNo - 1) * param.PageSize).
+		Order("questions.created_at DESC").Find(&res)
 	return res, find.Error
 }
 
@@ -134,7 +135,7 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 
 func (repository *QuestionRepositoryImpl) FindDetailedLikedByUser(ctx context.Context, DB *gorm.DB, param param.LikedQuestionParam) ([]result.QuestionResult, error) {
 	questions := []result.QuestionResult{}
-	find := DB.WithContext(ctx).Model(&result.QuestionResult{}).
+	find := DB.Debug().WithContext(ctx).Model(&result.QuestionResult{}).
 		Table(`question_likes ql 
 				join questions q on ql.question_id = q.id 
 				join users u ON u.id = q.user_id 
@@ -143,7 +144,7 @@ func (repository *QuestionRepositoryImpl) FindDetailedLikedByUser(ctx context.Co
 				left JOIN question_likes ql3 on ql3.question_id = q.id and ql3.user_id = ?
 				left join answers a on q.id = a.question_id `,
 			param.UserID).
-		Select(`q.id ,
+		Select(`ql.question_id ,
 				u.id as user_id ,
 				u.username ,
 				c.id as category_id,
@@ -154,9 +155,15 @@ func (repository *QuestionRepositoryImpl) FindDetailedLikedByUser(ctx context.Co
 				count(DISTINCT a.id) as answers,
 				ql3.question_id as user_liked
 			`)
-	find = find.Where("u.id = ?", param.LikerID).Group("q.id").
+	find = find.Where("u.id = ?", param.LikerID).Group("ql.question_id").
 		Limit(param.PageSize).
 		Offset((param.PageNo - 1) * param.PageSize).
+		Order("ql.created_at DESC").
 		Find(&questions)
 	return questions, find.Error
+}
+
+func (repository *QuestionRepositoryImpl) Delete(ctx context.Context, DB *gorm.DB, question entity.Question) (entity.Question, error) {
+	delete := DB.WithContext(ctx).Delete(&question)
+	return question, delete.Error
 }

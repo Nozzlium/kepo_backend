@@ -7,6 +7,7 @@ import (
 	"nozzlium/kepo_backend/data/result"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type AnswerRepositoryImpl struct {
@@ -41,7 +42,7 @@ func (repository *AnswerRepositoryImpl) FindOneBy(ctx context.Context, DB *gorm.
 
 func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *gorm.DB, param param.AnswerParam) ([]result.AnswerResult, error) {
 	answers := []result.AnswerResult{}
-	find := DB.WithContext(ctx).
+	find := DB.Debug().WithContext(ctx).
 		Table(
 			`answers as a
 			join users as u on u.id = a.user_id 
@@ -61,12 +62,33 @@ func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *go
 	if param.Answer.QuestionID != 0 {
 		find = find.Where("a.question_id = ?", param.Answer.QuestionID)
 	}
+
+	order := param.Order
+
+	var sortBy string
+	switch param.SortBy {
+	case "DTE":
+		sortBy = "a.created_at"
+	case "LKE":
+		sortBy = "likes"
+	default:
+		sortBy = "a.created_at"
+	}
+
 	if param.Answer.UserID != 0 {
 		find = find.Where("a.user_id = ?", param.Answer.UserID)
 	}
 	find = find.Group("a.id").
 		Limit(param.PageSize).
 		Offset((param.PageNo - 1) * param.PageSize).
+		Order(
+			clause.OrderByColumn{
+				Column: clause.Column{
+					Name: sortBy,
+				},
+				Desc: order == "DESC",
+			},
+		).
 		Find(&answers)
 	return answers, find.Error
 }

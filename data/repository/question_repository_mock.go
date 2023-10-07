@@ -61,3 +61,15 @@ func (repository *QuestionRepositoryMock) FindOneDetailedBy(ctx context.Context,
 func (repository *QuestionRepositoryMock) FindDetailedLikedByUser(ctx context.Context, DB *gorm.DB, param param.LikedQuestionParam) ([]result.QuestionResult, error) {
 	return []result.QuestionResult{}, nil
 }
+
+func (repository *QuestionRepositoryMock) Delete(ctx context.Context, DB *gorm.DB, question entity.Question) (entity.Question, error) {
+	args := repository.Mock.Called(
+		ctx, DB, question,
+	)
+	args0 := args.Get(0)
+	args1 := args.Get(1)
+	if args1 == nil {
+		return args0.(entity.Question), nil
+	}
+	return args0.(entity.Question), args1.(error)
+}

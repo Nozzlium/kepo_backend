@@ -26,5 +26,15 @@ func GetPaginationParamFromQuerry(
 	keyword := queries.Get(constants.KEYWORD)
 	pagination.Keyword = keyword
 
+	sortBy := queries.Get(constants.SORT_BY)
+	if sortBy != "" {
+		pagination.SortBy = sortBy
+	}
+
+	order := queries.Get(constants.ORDER)
+	if order != "" {
+		pagination.Order = order
+	}
+
 	return pagination
 }

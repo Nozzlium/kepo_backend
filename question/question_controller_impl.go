@@ -212,3 +212,33 @@ func (controller *QuestionControllerImpl) GetLikedByUser(writer http.ResponseWri
 	}
 	helper.WriteResponse(writer, &webResponse)
 }
+
+func (controller *QuestionControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	_, err := tools.GetClaimsFromContext(request.Context())
+	helper.PanicIfError(err)
+
+	idString := params.ByName("id")
+	id, err := strconv.ParseUint(idString, 10, 32)
+	if err != nil {
+		panic(exception.BadRequestError{})
+	}
+
+	questionEntity := entity.Question{
+		ID: uint(id),
+	}
+
+	resp, err := controller.QuestionService.Delete(
+		request.Context(),
+		questionEntity,
+	)
+	helper.PanicIfError(err)
+
+	webResponse := response.QuestionWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: resp,
+	}
+	helper.WriteResponse(writer, &webResponse)
+}

@@ -1,8 +1,9 @@
 package entity
 
 import (
-	"database/sql"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Question struct {
@@ -12,6 +13,6 @@ type Question struct {
 	Content     string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	DeletedAt   sql.NullTime
+	DeletedAt   gorm.DeletedAt
 	Description string
 }

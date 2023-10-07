@@ -53,18 +53,6 @@ func NewRouter() *httprouter.Router {
 
 	router := httprouter.New()
 
-	router.GlobalOPTIONS = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Access-Control-Request-Method") != "" {
-			// Set CORS headers
-			header := w.Header()
-			header.Set("Access-Control-Allow-Methods", header.Get("Allow"))
-			header.Set("Access-Control-Allow-Origin", "*")
-		}
-
-		// Adjust status code to 204
-		w.WriteHeader(http.StatusNoContent)
-	})
-
 	router.POST("/api/register", authController.Register)
 	router.POST("/api/login", authController.Login)
 
@@ -76,6 +64,7 @@ func NewRouter() *httprouter.Router {
 	router.GET("/api/question/:id", questionController.GetById)
 	router.GET("/api/user/:id/question", questionController.GetByUser)
 	router.GET("/api/user/:id/question/like", questionController.GetLikedByUser)
+	router.DELETE("/api/question/:id", questionController.Delete)
 
 	router.POST("/api/answer", answerController.Create)
 	router.GET("/api/answer", answerController.Find)

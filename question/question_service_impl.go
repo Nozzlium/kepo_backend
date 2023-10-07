@@ -73,3 +73,20 @@ func (service *QuestionServiceImpl) FindLikedByUser(ctx context.Context, param p
 	)
 	return helper.QuestionResultsToResponses(questions), err
 }
+
+func (service *QuestionServiceImpl) Delete(ctx context.Context, question entity.Question) (response.QuestionResponse, error) {
+	toBeDeleted, err := service.QuestionRepository.FindOneDetailedBy(
+		ctx,
+		service.DB,
+		param.QuestionParam{
+			Question: entity.Question{
+				ID: question.ID,
+			},
+		},
+	)
+	if err != nil {
+		return response.QuestionResponse{}, err
+	}
+	_, err = service.QuestionRepository.Delete(ctx, service.DB, question)
+	return helper.QuestionResultToResponse(toBeDeleted), err
+}

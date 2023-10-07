@@ -12,4 +12,5 @@ type QuestionService interface {
 	FindAll(ctx context.Context, param param.QuestionParam) ([]response.QuestionResponse, error)
 	FindOneBy(ctx context.Context, param param.QuestionParam) (response.QuestionResponse, error)
 	FindLikedByUser(ctx context.Context, param param.LikedQuestionParam) ([]response.QuestionResponse, error)
+	Delete(ctx context.Context, question entity.Question) (response.QuestionResponse, error)
 }
