@@ -23,4 +23,5 @@ type AnswerResponse struct {
 	User       UserResponse `json:"user"`
 	Likes      uint         `json:"likes"`
 	IsLiked    bool         `json:"isLiked"`
+	CreatedAt  string       `json:"createdAt"`
 }

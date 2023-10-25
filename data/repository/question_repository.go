@@ -17,4 +17,5 @@ type QuestionRepository interface {
 	FindOneDetailedBy(ctx context.Context, DB *gorm.DB, param param.QuestionParam) (result.QuestionResult, error)
 	FindDetailedLikedByUser(ctx context.Context, DB *gorm.DB, param param.LikedQuestionParam) ([]result.QuestionResult, error)
 	Delete(ctx context.Context, DB *gorm.DB, question entity.Question) (entity.Question, error)
+	Update(ctx context.Context, DB *gorm.DB, question entity.Question) (entity.Question, error)
 }

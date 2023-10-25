@@ -90,3 +90,12 @@ func (service *QuestionServiceImpl) Delete(ctx context.Context, question entity.
 	_, err = service.QuestionRepository.Delete(ctx, service.DB, question)
 	return helper.QuestionResultToResponse(toBeDeleted), err
 }
+
+func (service *QuestionServiceImpl) Update(ctx context.Context, question entity.Question) (response.QuestionResponse, error) {
+	update, err := service.QuestionRepository.Update(ctx, service.DB, question)
+	if err != nil {
+		return response.QuestionResponse{}, err
+	}
+	result, err := service.QuestionRepository.FindOneDetailedBy(ctx, service.DB, param.QuestionParam{Question: entity.Question{ID: update.ID}})
+	return helper.QuestionResultToResponse(result), err
+}

@@ -23,6 +23,8 @@ func QuestionResultToResponse(
 		Likes:       result.Likes,
 		Answers:     result.Answers,
 		IsLiked:     result.UserLiked != 0,
+		CreatedAt:   TimeToString(result.CreatedAt),
+		IsEdited:    !result.CreatedAt.Equal(result.UpdatedAt),
 	}
 }
 

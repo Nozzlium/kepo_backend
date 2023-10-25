@@ -42,7 +42,7 @@ func (repository *AnswerRepositoryImpl) FindOneBy(ctx context.Context, DB *gorm.
 
 func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *gorm.DB, param param.AnswerParam) ([]result.AnswerResult, error) {
 	answers := []result.AnswerResult{}
-	find := DB.Debug().WithContext(ctx).
+	find := DB.WithContext(ctx).
 		Table(
 			`answers as a
 			join users as u on u.id = a.user_id 
@@ -57,7 +57,9 @@ func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *go
 			u.id as user_id,
 			u.username as username,
 			count(distinct al.answer_id) as likes,
-			al1.answer_id as user_liked`,
+			al1.answer_id as user_liked,
+			a.created_at
+			`,
 		)
 	if param.Answer.QuestionID != 0 {
 		find = find.Where("a.question_id = ?", param.Answer.QuestionID)
@@ -110,7 +112,9 @@ func (repository *AnswerRepositoryImpl) FindOneDetailed(ctx context.Context, DB 
 			u.id as user_id,
 			u.username as username,
 			count(distinct al.answer_id) as likes,
-			al1.answer_id as user_liked`,
+			al1.answer_id as user_liked,
+			answers.created_at
+			`,
 		)
 	if param.Answer.ID != 0 {
 		find = find.Where(

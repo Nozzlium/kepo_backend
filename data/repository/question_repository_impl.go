@@ -43,7 +43,7 @@ func (repository *QuestionRepositoryImpl) FindOneBy(ctx context.Context, DB *gor
 
 func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *gorm.DB, param param.QuestionParam) ([]result.QuestionResult, error) {
 	res := []result.QuestionResult{}
-	find := DB.Debug().WithContext(ctx).Model(&entity.Question{}).
+	find := DB.WithContext(ctx).Model(&entity.Question{}).
 		Table(`questions 
 			join users u on u.id = questions.user_id
 			join categories c on c.id = questions.category_id
@@ -62,7 +62,9 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 			c.name as category_name,
 			count(distinct ql.question_id) as likes,
 			COUNT(a.id) as answers,
-			qll.question_id as user_liked
+			qll.question_id as user_liked,
+			questions.created_at,
+			questions.updated_at
 			`,
 		)
 	if param.Keyword != "" {
@@ -116,7 +118,9 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 			c.name as category_name,
 			count(distinct ql.question_id) as likes,
 			COUNT(a.id) as answers,
-			qll.question_id as user_liked
+			qll.question_id as user_liked,
+			questions.created_at,
+			questions.updated_at
 			`,
 		)
 	if param.Question.ID != 0 {
@@ -135,7 +139,7 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 
 func (repository *QuestionRepositoryImpl) FindDetailedLikedByUser(ctx context.Context, DB *gorm.DB, param param.LikedQuestionParam) ([]result.QuestionResult, error) {
 	questions := []result.QuestionResult{}
-	find := DB.Debug().WithContext(ctx).Model(&result.QuestionResult{}).
+	find := DB.WithContext(ctx).Model(&result.QuestionResult{}).
 		Table(`question_likes ql 
 				join questions q on ql.question_id = q.id 
 				join users u ON u.id = q.user_id 
@@ -166,4 +170,9 @@ func (repository *QuestionRepositoryImpl) FindDetailedLikedByUser(ctx context.Co
 func (repository *QuestionRepositoryImpl) Delete(ctx context.Context, DB *gorm.DB, question entity.Question) (entity.Question, error) {
 	delete := DB.WithContext(ctx).Delete(&question)
 	return question, delete.Error
+}
+
+func (repository *QuestionRepositoryImpl) Update(ctx context.Context, DB *gorm.DB, question entity.Question) (entity.Question, error) {
+	save := DB.WithContext(ctx).Model(&question).Updates(question)
+	return question, save.Error
 }

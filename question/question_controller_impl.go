@@ -242,3 +242,44 @@ func (controller *QuestionControllerImpl) Delete(writer http.ResponseWriter, req
 	}
 	helper.WriteResponse(writer, &webResponse)
 }
+
+func (controller *QuestionControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	_, err := tools.GetClaimsFromContext(request.Context())
+	helper.PanicIfError(err)
+
+	idString := params.ByName("id")
+	id, err := strconv.ParseUint(idString, 10, 32)
+	if err != nil {
+		panic(exception.BadRequestError{})
+	}
+
+	body := requestbody.Question{}
+	decoder := json.NewDecoder(request.Body)
+	err = decoder.Decode(&body)
+	helper.PanicIfError(err)
+
+	err = controller.Validator.Struct(body)
+	if err != nil {
+		panic(exception.BadRequestError{})
+	}
+
+	question, err := controller.QuestionService.Update(
+		request.Context(),
+		entity.Question{
+			ID:          uint(id),
+			CategoryID:  body.CategoryID,
+			Content:     body.Content,
+			Description: body.Description,
+		},
+	)
+	helper.PanicIfError(err)
+
+	webResponse := response.QuestionWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: question,
+	}
+	helper.WriteResponse(writer, &webResponse)
+}

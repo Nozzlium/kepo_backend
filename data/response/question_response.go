@@ -25,4 +25,6 @@ type QuestionResponse struct {
 	Likes       uint             `json:"likes"`
 	Answers     uint             `json:"answers"`
 	IsLiked     bool             `json:"isLiked"`
+	CreatedAt   string           `json:"createdAt"`
+	IsEdited    bool             `json:"isEdited"`
 }
