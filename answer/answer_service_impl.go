@@ -64,3 +64,37 @@ func (service *AnswerServiceImpl) FindOneBy(ctx context.Context, param param.Ans
 	)
 	return helper.AnswerResultToResponse(answer), err
 }
+
+func (service *AnswerServiceImpl) Delete(ctx context.Context, answer entity.Answer) (response.AnswerResponse, error) {
+	toBeDeleted, err := service.AnswerRepository.FindOneDetailed(
+		ctx,
+		service.DB,
+		param.AnswerParam{
+			Answer: entity.Answer{
+				ID: answer.ID,
+			},
+		},
+	)
+	if err != nil {
+		return response.AnswerResponse{}, err
+	}
+	_, err = service.AnswerRepository.Delete(ctx, service.DB, answer)
+	return helper.AnswerResultToResponse(toBeDeleted), err
+}
+
+func (service *AnswerServiceImpl) Update(ctx context.Context, answer entity.Answer) (response.AnswerResponse, error) {
+	_, err := service.AnswerRepository.Update(ctx, service.DB, answer)
+	if err != nil {
+		return response.AnswerResponse{}, err
+	}
+	result, err := service.AnswerRepository.FindOneDetailed(
+		ctx,
+		service.DB,
+		param.AnswerParam{
+			Answer: entity.Answer{
+				ID: answer.ID,
+			},
+		},
+	)
+	return helper.AnswerResultToResponse(result), err
+}

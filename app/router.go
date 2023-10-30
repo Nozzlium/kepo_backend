@@ -72,6 +72,8 @@ func NewRouter() *httprouter.Router {
 	router.GET("/api/answer/:id", answerController.FindById)
 	router.GET("/api/user/:id/answer", answerController.FindByUser)
 	router.GET("/api/question/:id/answer", answerController.FindByQuestion)
+	router.DELETE("/api/answer/:id", answerController.Delete)
+	router.PUT("/api/answer/:id", answerController.Update)
 
 	router.POST("/api/answer/like", answerLikeController.Like)
 	router.POST("/api/question/like", questionLikeController.Like)

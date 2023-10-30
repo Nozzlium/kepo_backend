@@ -170,7 +170,7 @@ func (controller *AnswerControllerImpl) FindByUser(writer http.ResponseWriter, r
 	helper.WriteResponse(writer, &webResponse)
 }
 
-func (controller AnswerControllerImpl) FindByQuestion(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+func (controller *AnswerControllerImpl) FindByQuestion(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	var userID uint = 0
 	claims, err := tools.GetClaimsFromContext(request.Context())
 	if err == nil {
@@ -204,6 +204,65 @@ func (controller AnswerControllerImpl) FindByQuestion(writer http.ResponseWriter
 			PageSize: len(resp),
 			Answers:  resp,
 		},
+	}
+	helper.WriteResponse(writer, &webResponse)
+}
+
+func (controller *AnswerControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	_, err := tools.GetClaimsFromContext(request.Context())
+	helper.PanicIfError(err)
+
+	idString := params.ByName("id")
+	id, err := strconv.ParseUint(idString, 10, 32)
+	helper.PanicIfError(err)
+
+	resp, err := controller.AnswerService.Delete(
+		request.Context(),
+		entity.Answer{
+			ID: uint(id),
+		},
+	)
+	helper.PanicIfError(err)
+
+	webResponse := response.AnswerWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: resp,
+	}
+	helper.WriteResponse(writer, &webResponse)
+}
+
+func (controller *AnswerControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	_, err := tools.GetClaimsFromContext(request.Context())
+	helper.PanicIfError(err)
+
+	idString := params.ByName("id")
+	id, err := strconv.ParseUint(idString, 10, 32)
+	helper.PanicIfError(err)
+
+	body := requestbody.Answer{}
+	decoder := json.NewDecoder(request.Body)
+	err = decoder.Decode(&body)
+	helper.PanicIfError(err)
+
+	resp, err := controller.AnswerService.Update(
+		request.Context(),
+		entity.Answer{
+			ID:         uint(id),
+			QuestionID: body.QuestionID,
+			Content:    body.Content,
+		},
+	)
+	helper.PanicIfError(err)
+
+	webResponse := response.AnswerWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: resp,
 	}
 	helper.WriteResponse(writer, &webResponse)
 }

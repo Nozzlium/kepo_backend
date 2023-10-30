@@ -51,3 +51,23 @@ func (repository *AnswerRepositoryMock) FindOneDetailed(ctx context.Context, DB 
 	}
 	return args0.(result.AnswerResult), args1.(error)
 }
+
+func (repository *AnswerRepositoryMock) Delete(ctx context.Context, DB *gorm.DB, answer entity.Answer) (entity.Answer, error) {
+	args := repository.Mock.Called(ctx, DB, answer)
+	args0 := args.Get(0)
+	args1 := args.Get(1)
+	if args1 == nil {
+		return args0.(entity.Answer), nil
+	}
+	return args0.(entity.Answer), args1.(error)
+}
+
+func (repository *AnswerRepositoryMock) Update(ctx context.Context, DB *gorm.DB, answer entity.Answer) (entity.Answer, error) {
+	args := repository.Mock.Called(ctx, DB, answer)
+	args0 := args.Get(0)
+	args1 := args.Get(1)
+	if args1 == nil {
+		return args0.(entity.Answer), nil
+	}
+	return args0.(entity.Answer), args1.(error)
+}
