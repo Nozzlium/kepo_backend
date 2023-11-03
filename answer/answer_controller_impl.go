@@ -114,19 +114,15 @@ func (controller *AnswerControllerImpl) FindById(writer http.ResponseWriter, req
 		},
 	}
 
-	resp, err := controller.AnswerService.FindBy(request.Context(), answerParams)
+	resp, err := controller.AnswerService.FindOneBy(request.Context(), answerParams)
 	helper.PanicIfError(err)
-
-	if len(resp) < 1 {
-		panic(exception.NotFoundError{})
-	}
 
 	webResponse := response.AnswerWebResponse{
 		BaseResponse: response.BaseResponse{
 			Code:   http.StatusOK,
 			Status: constants.STATUS_OK,
 		},
-		Data: resp[0],
+		Data: resp,
 	}
 	helper.WriteResponse(writer, &webResponse)
 
@@ -235,7 +231,7 @@ func (controller *AnswerControllerImpl) Delete(writer http.ResponseWriter, reque
 }
 
 func (controller *AnswerControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	_, err := tools.GetClaimsFromContext(request.Context())
+	claims, err := tools.GetClaimsFromContext(request.Context())
 	helper.PanicIfError(err)
 
 	idString := params.ByName("id")
@@ -253,6 +249,7 @@ func (controller *AnswerControllerImpl) Update(writer http.ResponseWriter, reque
 			ID:         uint(id),
 			QuestionID: body.QuestionID,
 			Content:    body.Content,
+			UserID:     claims.UserId,
 		},
 	)
 	helper.PanicIfError(err)

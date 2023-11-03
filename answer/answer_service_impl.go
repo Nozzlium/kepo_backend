@@ -91,6 +91,7 @@ func (service *AnswerServiceImpl) Update(ctx context.Context, answer entity.Answ
 		ctx,
 		service.DB,
 		param.AnswerParam{
+			UserID: answer.UserID,
 			Answer: entity.Answer{
 				ID: answer.ID,
 			},
