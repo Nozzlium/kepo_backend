@@ -144,22 +144,24 @@ func (repository *QuestionRepositoryImpl) FindDetailedLikedByUser(ctx context.Co
 				join questions q on ql.question_id = q.id 
 				join users u ON u.id = q.user_id 
 				join categories c ON c.id = q.category_id 
-				left join question_likes ql2 on ql2.question_id = q.id
-				left JOIN question_likes ql3 on ql3.question_id = q.id and ql3.user_id = ?
-				left join answers a on q.id = a.question_id `,
+				left join question_likes ql2 on ql2.question_id = ql.question_id
+				left JOIN question_likes ql3 on ql3.question_id = ql.question_id  and ql3.user_id = ?
+				left join answers a on ql.question_id = a.question_id`,
 			param.UserID).
-		Select(`ql.question_id ,
+		Select(`ql.question_id as id,
 				u.id as user_id ,
 				u.username ,
 				c.id as category_id,
 				c.name as category_name,
 				q.content ,
 				q.description,
-				COUNT(DISTINCT ql2.question_id) as likes,
+				count(DISTINCT ql2.user_id) as likes,
 				count(DISTINCT a.id) as answers,
-				ql3.question_id as user_liked
+				ql3.question_id as user_liked,
+				q.created_at,
+				q.updated_at
 			`)
-	find = find.Where("u.id = ?", param.LikerID).Group("ql.question_id").
+	find = find.Group("ql.question_id, ql.created_at").Where("u.id = ?", param.LikerID).
 		Limit(param.PageSize).
 		Offset((param.PageNo - 1) * param.PageSize).
 		Order("ql.created_at DESC").

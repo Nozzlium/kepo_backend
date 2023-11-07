@@ -7,6 +7,7 @@ import (
 	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/data/response"
 	"nozzlium/kepo_backend/helper"
+	"nozzlium/kepo_backend/mysqlerr"
 
 	"gorm.io/gorm"
 )
@@ -62,6 +63,7 @@ func (service *QuestionServiceImpl) FindOneBy(ctx context.Context, param param.Q
 		service.DB,
 		param,
 	)
+	err = mysqlerr.CheckMySQLError(err)
 	return helper.QuestionResultToResponse(question), err
 }
 

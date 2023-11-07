@@ -1,13 +1,20 @@
 package exception
 
 import (
+	"fmt"
 	"net/http"
 	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/response"
 	"nozzlium/kepo_backend/helper"
+
+	"gorm.io/gorm"
 )
 
 func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interface{}) {
+	fmt.Println(err)
+	if recordNotFound(writer, request, err) {
+		return
+	}
 	if badRequestError(writer, request, err) {
 		return
 	}
@@ -30,6 +37,18 @@ func ErrorHandler(writer http.ResponseWriter, request *http.Request, err interfa
 	}
 	helper.WriteResponse(writer, &webResponse)
 
+}
+
+func recordNotFound(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
+	ok := err == gorm.ErrRecordNotFound
+	if ok {
+		webResponse := response.BaseResponse{
+			Code:   http.StatusNotFound,
+			Status: constants.NOT_FOUND,
+		}
+		helper.WriteResponse(writer, &webResponse)
+	}
+	return ok
 }
 
 func userExistsError(writer http.ResponseWriter, request *http.Request, err interface{}) bool {
