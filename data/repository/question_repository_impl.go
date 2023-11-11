@@ -43,7 +43,7 @@ func (repository *QuestionRepositoryImpl) FindOneBy(ctx context.Context, DB *gor
 
 func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *gorm.DB, param param.QuestionParam) ([]result.QuestionResult, error) {
 	res := []result.QuestionResult{}
-	find := DB.WithContext(ctx).Model(&entity.Question{}).
+	find := DB.WithContext(ctx).Model(&entity.Question{}).Debug().
 		Table(`questions 
 			join users u on u.id = questions.user_id
 			join categories c on c.id = questions.category_id
@@ -60,8 +60,8 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 			u.username as username,
 			c.id as category_id,
 			c.name as category_name,
-			count(distinct ql.question_id) as likes,
-			COUNT(a.id) as answers,
+			count(distinct ql.user_id) as likes,
+			COUNT(distinct a.id) as answers,
 			qll.question_id as user_liked,
 			questions.created_at,
 			questions.updated_at
@@ -116,8 +116,8 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 			u.username as username,
 			c.id as category_id,
 			c.name as category_name,
-			count(distinct ql.question_id) as likes,
-			COUNT(a.id) as answers,
+			count(distinct ql.user_id) as likes,
+			COUNT(distinct a.id) as answers,
 			qll.question_id as user_liked,
 			questions.created_at,
 			questions.updated_at
@@ -139,7 +139,7 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 
 func (repository *QuestionRepositoryImpl) FindDetailedLikedByUser(ctx context.Context, DB *gorm.DB, param param.LikedQuestionParam) ([]result.QuestionResult, error) {
 	questions := []result.QuestionResult{}
-	find := DB.WithContext(ctx).Model(&result.QuestionResult{}).
+	find := DB.WithContext(ctx).Debug().
 		Table(`question_likes ql 
 				join questions q on ql.question_id = q.id 
 				join users u ON u.id = q.user_id 
@@ -161,7 +161,7 @@ func (repository *QuestionRepositoryImpl) FindDetailedLikedByUser(ctx context.Co
 				q.created_at,
 				q.updated_at
 			`)
-	find = find.Group("ql.question_id, ql.created_at").Where("u.id = ?", param.LikerID).
+	find = find.Group("ql.question_id, ql.created_at").Where("ql.user_id = ? AND q.deleted_at IS NULL", param.LikerID).
 		Limit(param.PageSize).
 		Offset((param.PageNo - 1) * param.PageSize).
 		Order("ql.created_at DESC").
