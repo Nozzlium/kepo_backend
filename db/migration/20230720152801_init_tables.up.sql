@@ -6,7 +6,8 @@ CREATE TABLE users (
   created_at timestamp NOT NULL,
   updated_at timestamp NULL DEFAULT NULL,
   PRIMARY KEY (id),
-  UNIQUE KEY unique_index (username,email)
+  UNIQUE KEY unique_username_index (username),
+  UNIQUE KEY unique_email_index (email)
 ) ENGINE=InnoDB;
 
 CREATE TABLE categories (
