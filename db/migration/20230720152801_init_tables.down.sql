@@ -1,4 +1,6 @@
 -- BEGIN;
+DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS notification_types;
 DROP TABLE IF EXISTS answer_likes;
 DROP TABLE IF EXISTS answers;
 DROP TABLE IF EXISTS question_likes;
