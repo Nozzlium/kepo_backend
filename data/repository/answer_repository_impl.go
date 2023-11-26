@@ -98,7 +98,7 @@ func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *go
 
 func (repository *AnswerRepositoryImpl) FindOneDetailed(ctx context.Context, DB *gorm.DB, param param.AnswerParam) (result.AnswerResult, error) {
 	answer := result.AnswerResult{}
-	find := DB.WithContext(ctx).Debug().Model(&entity.Answer{}).
+	find := DB.WithContext(ctx).Model(&entity.Answer{}).
 		Table(
 			`answers
 			join users as u on u.id = answers.user_id 
