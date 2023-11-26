@@ -9,6 +9,7 @@ CREATE TABLE notifications (
   notif_type varchar(10) NOT NULL,
   headline varchar(100) NOT NULL,
   preview varchar(100) NOT NULL,
+  is_read boolean NOT NULL DEFAULT FALSE,
   created_at timestamp NOT NULL,
   KEY fk_users_notification (user_id),
   KEY fk_questions_notification (question_id),
