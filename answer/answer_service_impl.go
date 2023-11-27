@@ -2,6 +2,8 @@ package answer
 
 import (
 	"context"
+	"fmt"
+	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
 	"nozzlium/kepo_backend/data/repository"
@@ -12,17 +14,20 @@ import (
 )
 
 type AnswerServiceImpl struct {
-	AnswerRepository repository.AnswerRepository
-	DB               *gorm.DB
+	AnswerRepository       repository.AnswerRepository
+	NotificationRepository repository.NotificationRepository
+	DB                     *gorm.DB
 }
 
 func NewAnswerService(
 	answerRepository repository.AnswerRepository,
+	notificationRepository repository.NotificationRepository,
 	DB *gorm.DB,
 ) *AnswerServiceImpl {
 	return &AnswerServiceImpl{
-		AnswerRepository: answerRepository,
-		DB:               DB,
+		AnswerRepository:       answerRepository,
+		NotificationRepository: notificationRepository,
+		DB:                     DB,
 	}
 }
 
@@ -44,6 +49,20 @@ func (service *AnswerServiceImpl) CreateAnswer(ctx context.Context, answer entit
 			},
 		},
 	)
+	if res.UserID != res.QuestionPosterID {
+		newNotif := entity.Notification{
+			UserID:     res.QuestionPosterID,
+			QuestionID: res.QuestionID,
+			NotifType:  constants.NOTIFICATION_TYPE_ANSWER,
+			Headline:   fmt.Sprintf(constants.ANSWER_POSTED_NOTIF, res.Username),
+			Preview:    helper.GetNotificationPreview(res.Content),
+		}
+		service.NotificationRepository.Create(
+			ctx,
+			service.DB,
+			newNotif,
+		)
+	}
 	return helper.AnswerResultToResponse(res), err
 }
 

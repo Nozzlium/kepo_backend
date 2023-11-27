@@ -11,6 +11,10 @@ import (
 type NotificationRepositoryImpl struct {
 }
 
+func NewNotificationRepository() *NotificationRepositoryImpl {
+	return &NotificationRepositoryImpl{}
+}
+
 func (repository *NotificationRepositoryImpl) Create(ctx context.Context, DB *gorm.DB, notification entity.Notification) (entity.Notification, error) {
 	insert := DB.WithContext(ctx).Create(&notification)
 	return notification, insert.Error

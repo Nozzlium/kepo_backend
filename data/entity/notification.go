@@ -3,9 +3,9 @@ package entity
 import "time"
 
 type Notification struct {
-	ID         int
-	UserID     int
-	QuestionID int
+	ID         uint
+	UserID     uint
+	QuestionID uint
 	NotifType  string
 	Headline   string
 	Preview    string

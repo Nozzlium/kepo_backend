@@ -26,6 +26,7 @@ func NewRouter() *httprouter.Router {
 	questionLikeRepository := repository.NewQuestionLikeRepository()
 	answerRepository := repository.NewAnswerRepository()
 	answerLikeRepository := repository.NewAnswerLikeRepository()
+	notificationRepository := repository.NewNotificationRepository()
 
 	authService := auth.NewAuthService(userRepository, db)
 	categoryService := category.NewCategoryService(db, categoryRepository)
@@ -33,7 +34,11 @@ func NewRouter() *httprouter.Router {
 	questionLikeService := questionlike.NewQuestionLikeService(
 		questionLikeRepository, questionRepository, db,
 	)
-	answerService := answer.NewAnswerService(answerRepository, db)
+	answerService := answer.NewAnswerService(
+		answerRepository,
+		notificationRepository,
+		db,
+	)
 	answerLikeService := answerlike.NewAnswerLikeService(
 		answerLikeRepository, answerRepository, db,
 	)

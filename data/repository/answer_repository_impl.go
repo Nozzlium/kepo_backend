@@ -46,7 +46,8 @@ func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *go
 		Model(&entity.Answer{}).
 		Table(
 			`answers
-			join users as u on u.id = answers.user_id 
+			join users as u on u.id = answers.user_id
+			join questions as q on q.id = answers.question_id
 			left join answer_likes al on al.answer_id = answers.id
 			left join answer_likes al1 on al1.answer_id = answers.id and al1.user_id = ?`,
 			param.UserID,
@@ -55,6 +56,7 @@ func (repository *AnswerRepositoryImpl) FindDetailed(ctx context.Context, DB *go
 			`answers.id,
 			answers.content,
 			answers.question_id,
+			q.user_id as question_poster_id,
 			u.id as user_id,
 			u.username as username,
 			count(distinct al.answer_id) as likes,
@@ -102,6 +104,7 @@ func (repository *AnswerRepositoryImpl) FindOneDetailed(ctx context.Context, DB 
 		Table(
 			`answers
 			join users as u on u.id = answers.user_id 
+			join questions as q on q.id = answers.question_id
 			left join answer_likes al on al.answer_id = answers.id
 			left join answer_likes al1 on al1.answer_id = answers.id and al1.user_id = ?`,
 			param.UserID,
@@ -110,6 +113,7 @@ func (repository *AnswerRepositoryImpl) FindOneDetailed(ctx context.Context, DB 
 			`answers.id,
 			answers.content,
 			answers.question_id,
+			q.user_id as question_poster_id,
 			u.id as user_id,
 			u.username as username,
 			count(distinct al.answer_id) as likes,
