@@ -1,5 +1,10 @@
 package response
 
+type NotificationsWebResponse struct {
+	BaseResponse
+	Data NotificationsResponse `json:"data"`
+}
+
 type NotificationResponse struct {
 	ID               uint   `json:"id"`
 	UserID           uint   `json:"userId"`

@@ -37,3 +37,9 @@ func (repository *NotificationRepositoryImpl) Read(ctx context.Context, DB *gorm
 		Update("is_read", true)
 	return notification, update.Error
 }
+
+func (repository *NotificationRepositoryImpl) GetUnreadCount(ctx context.Context, DB *gorm.DB, userId uint) (int, error) {
+	var unread int64
+	count := DB.WithContext(ctx).Model(&entity.Notification{}).Where("user_id = ? AND is_read = TRUE", userId).Count(&unread)
+	return int(unread), count.Error
+}

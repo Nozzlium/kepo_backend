@@ -22,3 +22,7 @@ func (mock *NotificationRepositoryMock) FindBy(ctx context.Context, DB *gorm.DB,
 func (mock *NotificationRepositoryMock) Read(ctx context.Context, DB *gorm.DB, notification entity.Notification) (entity.Notification, error) {
 	panic("not implemented") // TODO: Implement
 }
+
+func (mock *NotificationRepositoryMock) GetUnreadCount(ctx context.Context, DB *gorm.DB, userId uint) (int, error) {
+	panic("not implemented") // TODO: Implement
+}
