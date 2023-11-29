@@ -30,6 +30,16 @@ func (repository *NotificationRepositoryImpl) FindBy(ctx context.Context, DB *go
 	return notifications, find.Error
 }
 
+func (repository *NotificationRepositoryImpl) FindOneBy(ctx context.Context, DB *gorm.DB, notification entity.Notification) (entity.Notification, error) {
+	res := entity.Notification{}
+	find := DB.WithContext(ctx).Where("user_id = ?", notification.UserID)
+	if notification.ID != 0 {
+		find = find.Where("id = ?", notification.ID)
+	}
+	find = find.First(&res)
+	return res, find.Error
+}
+
 func (repository *NotificationRepositoryImpl) Read(ctx context.Context, DB *gorm.DB, notification entity.Notification) (entity.Notification, error) {
 	update := DB.WithContext(ctx).
 		Model(&notification).

@@ -9,5 +9,5 @@ import (
 
 type NotificationService interface {
 	Find(ctx context.Context, param param.NotificationParam) (response.NotificationsResponse, error)
-	Read(ctx context.Context, entity entity.Notification) (entity.Notification, error)
+	Read(ctx context.Context, entity entity.Notification) (response.NotificationResponse, error)
 }

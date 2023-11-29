@@ -2,19 +2,25 @@ package answerlike
 
 import (
 	"context"
+	"fmt"
+	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/entity"
 	"nozzlium/kepo_backend/data/param"
 	"nozzlium/kepo_backend/data/repository"
 	"nozzlium/kepo_backend/data/response"
+	"nozzlium/kepo_backend/data/result"
 	"nozzlium/kepo_backend/helper"
+	"sync"
 
 	"gorm.io/gorm"
 )
 
 type AnswerLikeServiceImpl struct {
-	AnswerLikeRepository repository.AnswerLikeRepository
-	AnswerRepository     repository.AnswerRepository
-	DB                   *gorm.DB
+	AnswerLikeRepository   repository.AnswerLikeRepository
+	AnswerRepository       repository.AnswerRepository
+	UserRepository         repository.UserRepository
+	NotificationRepository repository.NotificationRepository
+	DB                     *gorm.DB
 }
 
 func NewAnswerLikeService(
@@ -47,20 +53,55 @@ func (service *AnswerLikeServiceImpl) AssignLike(ctx context.Context, params par
 	if err != nil {
 		return response.AnswerResponse{}, err
 	}
-	res, err := service.AnswerRepository.FindOneDetailed(
-		ctx,
-		service.DB,
-		param.AnswerParam{
-			PaginationParam: param.InitPaginationParam(),
-			UserID:          params.AnswerLike.UserID,
-			Answer: entity.Answer{
-				ID: params.AnswerLike.AnswerID,
+
+	var resAnswer result.AnswerResult
+	var resUser entity.User
+
+	var wg sync.WaitGroup
+
+	wg.Add(2)
+
+	go func() {
+		resAnswer, err = service.AnswerRepository.FindOneDetailed(
+			ctx,
+			service.DB,
+			param.AnswerParam{
+				PaginationParam: param.InitPaginationParam(),
+				UserID:          params.AnswerLike.UserID,
+				Answer: entity.Answer{
+					ID: params.AnswerLike.AnswerID,
+				},
 			},
-		},
-	)
-	if err != nil {
+		)
+		wg.Done()
+	}()
+
+	go func() {
+		resUser, err = service.UserRepository.FindOneBasedOnIdentity(
+			ctx,
+			service.DB,
+			entity.User{
+				ID: params.AnswerLike.UserID,
+			},
+		)
+		wg.Done()
+	}()
+
+	if err == nil {
+		service.NotificationRepository.Create(
+			ctx,
+			service.DB,
+			entity.Notification{
+				UserID:     resAnswer.UserID,
+				QuestionID: resAnswer.QuestionID,
+				NotifType:  constants.NOTIFICATION_TYPE_LIKE,
+				Headline:   fmt.Sprintf(constants.ANSWER_LIKE_NOTIF, resUser.Username),
+				Preview:    helper.GetNotificationPreview(resAnswer.Content),
+			},
+		)
+	} else {
 		return response.AnswerResponse{}, err
 	}
-	likedAnswer := res
-	return helper.AnswerResultToResponse(likedAnswer), nil
+
+	return helper.AnswerResultToResponse(resAnswer), nil
 }

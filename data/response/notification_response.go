@@ -5,6 +5,11 @@ type NotificationsWebResponse struct {
 	Data NotificationsResponse `json:"data"`
 }
 
+type NotificationWebResponse struct {
+	BaseResponse
+	Data NotificationResponse `json:"data"`
+}
+
 type NotificationResponse struct {
 	ID               uint   `json:"id"`
 	UserID           uint   `json:"userId"`
