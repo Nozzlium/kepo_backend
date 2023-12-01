@@ -18,6 +18,14 @@ type NotificationControllerImpl struct {
 	NotificationService NotificationService
 }
 
+func NewNotificationController(
+	notificationService NotificationService,
+) *NotificationControllerImpl {
+	return &NotificationControllerImpl{
+		NotificationService: notificationService,
+	}
+}
+
 func (controller *NotificationControllerImpl) Find(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	claims, err := tools.GetClaimsFromContext(request.Context())
 	helper.PanicIfError(err)

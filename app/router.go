@@ -7,6 +7,7 @@ import (
 	"nozzlium/kepo_backend/auth"
 	"nozzlium/kepo_backend/category"
 	"nozzlium/kepo_backend/data/repository"
+	"nozzlium/kepo_backend/notification"
 	"nozzlium/kepo_backend/question"
 	"nozzlium/kepo_backend/questionlike"
 	"nozzlium/kepo_backend/user"
@@ -32,7 +33,11 @@ func NewRouter() *httprouter.Router {
 	categoryService := category.NewCategoryService(db, categoryRepository)
 	questionService := question.NewQuestionService(questionRepository, db)
 	questionLikeService := questionlike.NewQuestionLikeService(
-		questionLikeRepository, questionRepository, db,
+		questionLikeRepository,
+		questionRepository,
+		userRepository,
+		notificationRepository,
+		db,
 	)
 	answerService := answer.NewAnswerService(
 		answerRepository,
@@ -40,10 +45,22 @@ func NewRouter() *httprouter.Router {
 		db,
 	)
 	answerLikeService := answerlike.NewAnswerLikeService(
-		answerLikeRepository, answerRepository, db,
+		answerLikeRepository,
+		answerRepository,
+		userRepository,
+		notificationRepository,
+		db,
 	)
 	userService := user.NewUserService(userRepository, db)
 	userController := user.NewUserController(userService)
+
+	notificationService := notification.NewNotificationService(
+		notificationRepository,
+		db,
+	)
+	notificationController := notification.NewNotificationController(
+		notificationService,
+	)
 
 	authController := auth.NewAuthController(authService, validator)
 	categoryController := category.NewCategoryController(categoryService)
@@ -79,6 +96,9 @@ func NewRouter() *httprouter.Router {
 	router.GET("/api/question/:id/answer", answerController.FindByQuestion)
 	router.DELETE("/api/answer/:id", answerController.Delete)
 	router.PUT("/api/answer/:id", answerController.Update)
+
+	router.GET("/notification", notificationController.Find)
+	router.PUT("/notification/:id/read", notificationController.Read)
 
 	router.POST("/api/answer/like", answerLikeController.Like)
 	router.POST("/api/question/like", questionLikeController.Like)

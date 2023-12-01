@@ -26,11 +26,15 @@ type QuestionLikeServiceImpl struct {
 func NewQuestionLikeService(
 	questionLikeRepository repository.QuestionLikeRepository,
 	questionRepository repository.QuestionRepository,
+	userRepository repository.UserRepository,
+	notificationRepository repository.NotificationRepository,
 	DB *gorm.DB,
 ) *QuestionLikeServiceImpl {
 	return &QuestionLikeServiceImpl{
 		QuestionLikeRepository: questionLikeRepository,
 		QuestionRepository:     questionRepository,
+		UserRepository:         userRepository,
+		NotificationRepository: notificationRepository,
 		DB:                     DB,
 	}
 }
@@ -75,31 +79,37 @@ func (service *QuestionLikeServiceImpl) AssignLike(ctx context.Context, params p
 		wg.Done()
 	}()
 
-	go func() {
-		resUser, err = service.UserRepository.FindOneBasedOnIdentity(
-			ctx,
-			service.DB,
-			entity.User{
-				ID: params.QuestionLike.UserID,
-			},
-		)
+	if params.IsLiked {
+		go func() {
+			resUser, err = service.UserRepository.FindOneBy(
+				ctx,
+				service.DB,
+				entity.User{
+					ID: params.QuestionLike.UserID,
+				},
+			)
+			wg.Done()
+		}()
+	} else {
 		wg.Done()
-	}()
+	}
 
 	wg.Wait()
 
 	if err == nil {
-		service.NotificationRepository.Create(
-			ctx,
-			service.DB,
-			entity.Notification{
-				UserID:     resQuestion.UserID,
-				QuestionID: resQuestion.ID,
-				NotifType:  constants.NOTIFICATION_TYPE_LIKE,
-				Headline:   fmt.Sprintf(constants.QUESTION_LIKE_NOTIF, resUser.Username),
-				Preview:    helper.GetNotificationPreview(resQuestion.Content),
-			},
-		)
+		if params.IsLiked && params.QuestionLike.UserID != resQuestion.UserID {
+			service.NotificationRepository.Create(
+				ctx,
+				service.DB,
+				entity.Notification{
+					UserID:     resQuestion.UserID,
+					QuestionID: resQuestion.ID,
+					NotifType:  constants.NOTIFICATION_TYPE_LIKE,
+					Headline:   fmt.Sprintf(constants.QUESTION_LIKE_NOTIF, resUser.Username),
+					Preview:    helper.GetNotificationPreview(resQuestion.Content),
+				},
+			)
+		}
 	} else {
 		return response.QuestionResponse{}, err
 	}

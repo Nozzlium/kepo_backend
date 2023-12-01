@@ -26,12 +26,16 @@ type AnswerLikeServiceImpl struct {
 func NewAnswerLikeService(
 	answerLikeRepository repository.AnswerLikeRepository,
 	answerRepository repository.AnswerRepository,
+	userRepository repository.UserRepository,
+	notificationRepository repository.NotificationRepository,
 	DB *gorm.DB,
 ) *AnswerLikeServiceImpl {
 	return &AnswerLikeServiceImpl{
-		AnswerLikeRepository: answerLikeRepository,
-		AnswerRepository:     answerRepository,
-		DB:                   DB,
+		AnswerLikeRepository:   answerLikeRepository,
+		AnswerRepository:       answerRepository,
+		UserRepository:         userRepository,
+		NotificationRepository: notificationRepository,
+		DB:                     DB,
 	}
 }
 
@@ -76,29 +80,37 @@ func (service *AnswerLikeServiceImpl) AssignLike(ctx context.Context, params par
 		wg.Done()
 	}()
 
-	go func() {
-		resUser, err = service.UserRepository.FindOneBasedOnIdentity(
-			ctx,
-			service.DB,
-			entity.User{
-				ID: params.AnswerLike.UserID,
-			},
-		)
+	if params.IsLike {
+		go func() {
+			resUser, err = service.UserRepository.FindOneBy(
+				ctx,
+				service.DB,
+				entity.User{
+					ID: params.AnswerLike.UserID,
+				},
+			)
+			wg.Done()
+		}()
+	} else {
 		wg.Done()
-	}()
+	}
+
+	wg.Wait()
 
 	if err == nil {
-		service.NotificationRepository.Create(
-			ctx,
-			service.DB,
-			entity.Notification{
-				UserID:     resAnswer.UserID,
-				QuestionID: resAnswer.QuestionID,
-				NotifType:  constants.NOTIFICATION_TYPE_LIKE,
-				Headline:   fmt.Sprintf(constants.ANSWER_LIKE_NOTIF, resUser.Username),
-				Preview:    helper.GetNotificationPreview(resAnswer.Content),
-			},
-		)
+		if params.IsLike && params.AnswerLike.UserID != resAnswer.UserID {
+			service.NotificationRepository.Create(
+				ctx,
+				service.DB,
+				entity.Notification{
+					UserID:     resAnswer.UserID,
+					QuestionID: resAnswer.QuestionID,
+					NotifType:  constants.NOTIFICATION_TYPE_LIKE,
+					Headline:   fmt.Sprintf(constants.ANSWER_LIKE_NOTIF, resUser.Username),
+					Preview:    helper.GetNotificationPreview(resAnswer.Content),
+				},
+			)
+		}
 	} else {
 		return response.AnswerResponse{}, err
 	}
