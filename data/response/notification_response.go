@@ -24,6 +24,5 @@ type NotificationResponse struct {
 type NotificationsResponse struct {
 	PageNo        int                    `json:"pageNo"`
 	PageSize      int                    `json:"pageSize"`
-	TotalUnread   int                    `json:"totalUnread"`
 	Notifications []NotificationResponse `json:"notifications"`
 }

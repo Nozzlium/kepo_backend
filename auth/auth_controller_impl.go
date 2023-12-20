@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"nozzlium/kepo_backend/constants"
 	"nozzlium/kepo_backend/data/param"
@@ -35,7 +36,11 @@ func (controller *AuthControllerImpl) Register(writer http.ResponseWriter, reque
 	helper.PanicIfError(err)
 
 	err = controller.Validator.Struct(body)
-	helper.PanicIfError(err)
+	if err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		fmt.Println("har", validationErrors[0].Field())
+		helper.PanicIfError(err)
+	}
 
 	resp, err := controller.AuthService.Register(
 		request.Context(),

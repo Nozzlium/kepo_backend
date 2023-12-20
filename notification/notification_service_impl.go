@@ -32,13 +32,9 @@ func (service *NotificationServiceImpl) Find(ctx context.Context, param param.No
 		return response.NotificationsResponse{}, err
 	}
 	notifs := helper.NotificationEntitiesToResponses(res)
-	unreadCount, err := service.NotificationRepository.GetUnreadCount(ctx, service.DB, param.Notification.UserID)
-	if err != nil {
-		return response.NotificationsResponse{}, err
-	}
+
 	return response.NotificationsResponse{
 		Notifications: notifs,
-		TotalUnread:   unreadCount,
 		PageNo:        param.PageNo,
 		PageSize:      len(notifs),
 	}, nil
@@ -47,4 +43,12 @@ func (service *NotificationServiceImpl) Find(ctx context.Context, param param.No
 func (service *NotificationServiceImpl) Read(ctx context.Context, entity entity.Notification) (response.NotificationResponse, error) {
 	res, err := service.NotificationRepository.Read(ctx, service.DB, entity)
 	return helper.NotificationEntityToResponse(res), err
+}
+
+func (service *NotificationServiceImpl) GetUnreadCount(ctx context.Context, entity entity.Notification) (int, error) {
+	return service.NotificationRepository.GetUnreadCount(
+		ctx,
+		service.DB,
+		entity.UserID,
+	)
 }

@@ -9,4 +9,5 @@ import (
 type NotificationController interface {
 	Find(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	Read(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	GetUnreadCount(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 }

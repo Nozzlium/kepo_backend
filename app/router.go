@@ -97,8 +97,9 @@ func NewRouter() *httprouter.Router {
 	router.DELETE("/api/answer/:id", answerController.Delete)
 	router.PUT("/api/answer/:id", answerController.Update)
 
-	router.GET("/notification", notificationController.Find)
-	router.PUT("/notification/:id/read", notificationController.Read)
+	router.GET("/api/notification", notificationController.Find)
+	router.PUT("/api/notification/:id/read", notificationController.Read)
+	router.GET("/api/notification/unread", notificationController.GetUnreadCount)
 
 	router.POST("/api/answer/like", answerLikeController.Like)
 	router.POST("/api/question/like", questionLikeController.Like)

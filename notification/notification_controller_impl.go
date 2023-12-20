@@ -81,3 +81,27 @@ func (controller *NotificationControllerImpl) Read(writer http.ResponseWriter, r
 	}
 	helper.WriteResponse(writer, &webResponse)
 }
+
+func (controller *NotificationControllerImpl) GetUnreadCount(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	claims, err := tools.GetClaimsFromContext(request.Context())
+	helper.PanicIfError(err)
+
+	unread, err := controller.NotificationService.GetUnreadCount(
+		request.Context(),
+		entity.Notification{
+			UserID: claims.UserId,
+		},
+	)
+	helper.PanicIfError(err)
+
+	webResponse := response.NotificationCountWebResponse{
+		BaseResponse: response.BaseResponse{
+			Code:   http.StatusOK,
+			Status: constants.STATUS_OK,
+		},
+		Data: response.NotificationCountResponse{
+			TotalUnread: unread,
+		},
+	}
+	helper.WriteResponse(writer, &webResponse)
+}
