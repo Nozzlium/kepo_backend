@@ -18,3 +18,6 @@ CREATE TABLE notifications (
   CONSTRAINT fk_questions_notification FOREIGN KEY (question_id) REFERENCES questions (id),
   CONSTRAINT fk_notification_types_notification FOREIGN KEY (notif_type) REFERENCES notification_types (notif_type)
 ) ENGINE=InnoDB;
+
+INSERT INTO notification_types VALUES ("LKE");
+INSERT INTO notification_types VALUES ("ANS");
