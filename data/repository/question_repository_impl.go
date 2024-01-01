@@ -49,7 +49,7 @@ func (repository *QuestionRepositoryImpl) FindDetailed(ctx context.Context, DB *
 			join categories c on c.id = questions.category_id
 			left join question_likes ql on questions.id = ql.question_id
 			left join question_likes qll on qll.question_id = questions.id and qll.user_id = ?
-			left join answers a on a.question_id  = questions.id`,
+			left join answers a on a.question_id  = questions.id and a.deleted_at is NULL`,
 			param.UserID,
 		).
 		Select(
@@ -105,7 +105,7 @@ func (repository *QuestionRepositoryImpl) FindOneDetailedBy(ctx context.Context,
 			join categories c on c.id = questions.category_id
 			left join question_likes ql on questions.id = ql.question_id
 			left join question_likes qll on qll.question_id = questions.id and qll.user_id = ?
-			left join answers a on a.question_id  = questions.id`,
+			left join answers a on a.question_id  = questions.id and a.deleted_at is NULL`,
 			param.UserID,
 		).
 		Select(
