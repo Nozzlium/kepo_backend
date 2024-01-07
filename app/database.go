@@ -9,7 +9,7 @@ import (
 
 func NewTestDB() *gorm.DB {
 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
-	dsn := "root:kenshoryureppa@tcp(127.0.0.1:3306)/kepo_backend_test?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:Admin123@tcp(127.0.0.1:3306)/kepo_backend_test?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	helper.PanicIfError(err)
 	return db
@@ -17,7 +17,7 @@ func NewTestDB() *gorm.DB {
 
 func NewDB() *gorm.DB {
 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
-	dsn := "root:Admin123@tcp(127.0.0.1:3306)/kepo_backend?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "kepo:jangansukakepokamu@tcp(127.0.0.1:3306)/kepo_database?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	helper.PanicIfError(err)
 	return db

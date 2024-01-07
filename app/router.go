@@ -18,7 +18,7 @@ import (
 
 func NewRouter() *httprouter.Router {
 
-	db := NewTestDB()
+	db := NewDB()
 	validator := validator.New()
 
 	userRepository := repository.NewUserRepository()
