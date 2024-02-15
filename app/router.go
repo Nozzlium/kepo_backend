@@ -1,7 +1,6 @@
 package app
 
 import (
-	"net/http"
 	"nozzlium/kepo_backend/answer"
 	"nozzlium/kepo_backend/answerlike"
 	"nozzlium/kepo_backend/auth"
