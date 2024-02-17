@@ -74,36 +74,36 @@ func NewRouter() *httprouter.Router {
 
 	router := httprouter.New()
 
-	router.POST("/register", authController.Register)
-	router.POST("/login", authController.Login)
+	router.POST("/api/register", authController.Register)
+	router.POST("/api/login", authController.Login)
 
-	router.GET("/details", userController.GetDetails)
-	router.GET("/user/:id/details", userController.GetById)
+	router.GET("/api/details", userController.GetDetails)
+	router.GET("/api/user/:id/details", userController.GetById)
 
-	router.POST("/question", questionController.Create)
-	router.GET("/question", questionController.Get)
-	router.GET("/question/:id", questionController.GetById)
-	router.GET("/user/:id/question", questionController.GetByUser)
-	router.GET("/user/:id/question/like", questionController.GetLikedByUser)
-	router.DELETE("/question/:id", questionController.Delete)
-	router.PUT("/question/:id", questionController.Update)
+	router.POST("/api/question", questionController.Create)
+	router.GET("/api/question", questionController.Get)
+	router.GET("/api/question/:id", questionController.GetById)
+	router.GET("/api/user/:id/question", questionController.GetByUser)
+	router.GET("/api/user/:id/question/like", questionController.GetLikedByUser)
+	router.DELETE("/api/question/:id", questionController.Delete)
+	router.PUT("/api/question/:id", questionController.Update)
 
-	router.POST("/answer", answerController.Create)
-	router.GET("/answer", answerController.Find)
-	router.GET("/answer/:id", answerController.FindById)
-	router.GET("/user/:id/answer", answerController.FindByUser)
-	router.GET("/question/:id/answer", answerController.FindByQuestion)
-	router.DELETE("/answer/:id", answerController.Delete)
-	router.PUT("/answer/:id", answerController.Update)
+	router.POST("/api/answer", answerController.Create)
+	router.GET("/api/answer", answerController.Find)
+	router.GET("/api/answer/:id", answerController.FindById)
+	router.GET("/api/user/:id/answer", answerController.FindByUser)
+	router.GET("/api/question/:id/answer", answerController.FindByQuestion)
+	router.DELETE("/api/answer/:id", answerController.Delete)
+	router.PUT("/api/answer/:id", answerController.Update)
 
-	router.GET("/notification", notificationController.Find)
-	router.PUT("/notification/:id/read", notificationController.Read)
-	router.GET("/notification/unread", notificationController.GetUnreadCount)
+	router.GET("/api/notification", notificationController.Find)
+	router.PUT("/api/notification/:id/read", notificationController.Read)
+	router.GET("/api/notification/unread", notificationController.GetUnreadCount)
 
-	router.POST("/answer/like", answerLikeController.Like)
-	router.POST("/question/like", questionLikeController.Like)
+	router.POST("/api/answer/like", answerLikeController.Like)
+	router.POST("/api/question/like", questionLikeController.Like)
 
-	router.GET("/category", categoryController.Get)
+	router.GET("/api/category", categoryController.Get)
 
 	return router
 
